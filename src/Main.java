@@ -16,5 +16,9 @@ public class Main {
             System.err.println("Can not read file");
             e.printStackTrace();
         }
+        catch (RuntimeException re){
+            System.err.println("Compile Error occurred!");
+            re.printStackTrace();
+        }
     }
 }
