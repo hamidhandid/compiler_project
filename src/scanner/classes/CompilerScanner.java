@@ -9,7 +9,7 @@ import java.io.IOException;
 
 // See https://github.com/jflex-de/jflex/issues/222
 @SuppressWarnings("FallThrough")
-public class CompilerScanner {
+public class CompilerScanner implements parser.Lexical {
 
     /**
      * This character denotes the end of file.
@@ -1010,5 +1010,40 @@ public class CompilerScanner {
                 }
             }
         }
+    }
+
+    @Override
+    public String nextToken() {
+        try {
+            currentSymbol = nextSymbol();
+            while (currentSymbol.getType() == Type.WHITESPACE) {
+                currentSymbol = nextSymbol();
+                if (currentSymbol == null) {
+                    return "$";
+                }
+            }
+//            System.out.println(currentSymbol.getToken());
+//            System.out.println(currentSymbol.getType());
+            String token;
+            switch (currentSymbol.getType()) {
+                case IDENTIFIER:
+                    token = "id";
+                    break;
+                case INTEGER_NUMBER:
+                    token = "int_const";
+                    break;
+                default:
+                    token = currentSymbol.getToken();
+            }
+            return token;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Symbol getSymbol() {
+        return currentSymbol;
     }
 }
