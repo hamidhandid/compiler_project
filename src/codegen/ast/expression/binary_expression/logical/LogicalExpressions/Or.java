@@ -3,9 +3,9 @@ package codegen.ast.expression.binary_expression.arithmetic;
 import codegen.ast.expression.binary_expression.arithmetic.BinaryExpression;
 import codegen.symbol_table.stacks.SemanticStack;
 
-public class Or extends BinaryExpression {
+public class Or extends LogicalExpression {
 
-    public Or(int firstOperand, int secondOperand) {
+    public Or(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
         super.surrogate = "||";
     }

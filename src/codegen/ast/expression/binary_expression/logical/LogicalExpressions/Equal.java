@@ -3,7 +3,7 @@ package codegen.ast.expression.binary_expression.arithmetic;
 import codegen.ast.expression.binary_expression.arithmetic.BinaryExpression;
 import codegen.symbol_table.stacks.SemanticStack;
 
-public class Equal extends BinaryExpression {
+public class Equal extends LogicalExpression {
 
     public Equal(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);

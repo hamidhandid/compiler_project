@@ -13,7 +13,6 @@ public class LogicalExpression implements Comparable {
     }
     
     protected void compare(){
-        Label
         // set number1
         // set number2
         // firstType = firstOperand.getType();
