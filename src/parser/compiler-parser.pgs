@@ -2144,7 +2144,7 @@
         "start": 115,
         "end": 116,
         "token": "int_const",
-        "func": "",
+        "func": "pushInteger",
         "anchorX": 507.5,
         "anchorY": 303.5,
         "isGraph": false,
