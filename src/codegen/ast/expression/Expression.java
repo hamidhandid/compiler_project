@@ -1,10 +1,12 @@
 package codegen.ast.expression;
 
 import codegen.ast.Compilable;
+import scanner.classes.Type;
 
 public abstract class Expression implements Compilable {
-    public Expression getType() {
-        // return type
-        return 0;
+    private Type type;
+
+    public Type getType() {
+        return type;
     }
 }

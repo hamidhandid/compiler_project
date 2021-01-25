@@ -30,11 +30,11 @@ public class CodeGenerator implements parser.CodeGenerator {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-                int secondOperand = (Integer) SemanticStack.getInstance().pop();
-                int firstOperand = (Integer) SemanticStack.getInstance().pop();
-                Add add = new Add(firstOperand, secondOperand);
-                add.compile();
-                System.out.println(SemanticStack.getInstance().peek());
+//                int secondOperand = (Integer) SemanticStack.getInstance().pop();
+//                int firstOperand = (Integer) SemanticStack.getInstance().pop();
+//                Add add = new Add(firstOperand, secondOperand);
+//                add.compile();
+//                System.out.println(SemanticStack.getInstance().peek());
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
