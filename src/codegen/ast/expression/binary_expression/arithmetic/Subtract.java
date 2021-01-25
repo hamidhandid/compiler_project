@@ -1,4 +1,16 @@
-package codegen.ast.expression.binary_expression.arithmetic;
+package codegen.ast.expression.binary_expression;
 
-public class Subtract {
+import codegen.symbol_table.stacks.SemanticStack;
+
+public class Subtract extends BinaryExpression {
+    super.surrogate = "-";
+    public Subtract(Expression firstOperand, Expression secondOperand) {
+        super(firstOperand, secondOperand);
+    }
+
+    @Override
+    public void compile() {
+//        super.compile();
+        generate_code(surrogate);
+    }
 }

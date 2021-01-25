@@ -1,15 +1,16 @@
-package codegen.ast.expression.binary_expression.arithmetic;
+package codegen.ast.expression.binary_expression;
 
 import codegen.symbol_table.stacks.SemanticStack;
 
-public class Add extends BinaryArithmeticExpression {
-    public Add(int firstOperand, int secondOperand) {
+public class Add extends BinaryExpression {
+    super.surrogate = "+";
+    public Add(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
     }
 
     @Override
     public void compile() {
 //        super.compile();
-        SemanticStack.getInstance().push(firstOperand + secondOperand);
+        generate_code(surrogate);
     }
 }
