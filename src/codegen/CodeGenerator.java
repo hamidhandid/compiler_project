@@ -1,15 +1,43 @@
 package codegen;
 
+import codegen.ast.expression.binary_expression.arithmetic.Add;
+import codegen.ast.expression.constant.IntegerConstant;
+import codegen.symbol_table.stacks.SemanticStack;
+import scanner.classes.CompilerScanner;
+
 public class CodeGenerator implements parser.CodeGenerator {
+    private CodeGenerator() {
+    }
+
+    private CompilerScanner lexical;
+
+    public CompilerScanner getLexical() {
+        return lexical;
+    }
+
+    public void initLexical(CompilerScanner lexical) {
+        this.lexical = lexical;
+    }
+
+    private static CodeGenerator instance = new CodeGenerator();
+
+    public static CodeGenerator getInstance() {
+        return instance;
+    }
 
     @Override
     public void doSemantic(String sem) {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
+                int secondOperand = (Integer) SemanticStack.getInstance().pop();
+                int firstOperand = (Integer) SemanticStack.getInstance().pop();
+                Add add = new Add(firstOperand, secondOperand);
+                add.compile();
+                System.out.println(SemanticStack.getInstance().peek());
                 break;
             case "sub":
-                System.out.println("code gen of substract");
+                System.out.println("code gen of subtract");
                 break;
             case "mult":
                 System.out.println("code gen of multiply");
@@ -70,6 +98,11 @@ public class CodeGenerator implements parser.CodeGenerator {
                 break; */
             case "push":
                 System.out.println("code gen of push");
+                break;
+            case "pushInteger":
+                System.out.println("code gen of push integer");
+                IntegerConstant intConst = new IntegerConstant(lexical.intValue);
+                intConst.compile();
                 break;
             case "pop":
                 System.out.println("code gen of pop");

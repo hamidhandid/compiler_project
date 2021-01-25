@@ -1,7 +1,5 @@
 function int main() {
     int a;
-    int b;
-    int c;
-    a = b + c;
+    a = 2 + 3;
     return 0;
 }
