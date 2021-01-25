@@ -1,7 +1,7 @@
-package codegen.ast.expression.binary_expression.arithmetic;
+package codegen.ast.expression.binary_expression.logical.LogicalExpressions;
 
-import codegen.ast.expression.binary_expression.arithmetic.BinaryExpression;
-import codegen.symbol_table.stacks.SemanticStack;
+import codegen.ast.expression.Expression;
+import codegen.ast.expression.binary_expression.logical.LogicalExpression;
 
 public class And extends LogicalExpression {
 

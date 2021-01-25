@@ -1,13 +1,11 @@
-package codegen.ast.expression.binary_expression.logical.LogicalExpressions;
-
 import codegen.ast.expression.Expression;
 import codegen.ast.expression.binary_expression.logical.LogicalExpression;
 
-public class Or extends LogicalExpression {
+public class NotEqual extends LogicalExpression {
 
-    public Or(Expression firstOperand, Expression secondOperand) {
+    public NotEqual(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
-        super.surrogate = "||";
+        super.surrogate = "!=";
     }
 
     @Override
