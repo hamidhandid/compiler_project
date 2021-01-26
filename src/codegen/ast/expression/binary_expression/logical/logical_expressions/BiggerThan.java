@@ -1,13 +1,13 @@
-package codegen.ast.expression.binary_expression.logical.LogicalExpressions;
+package codegen.ast.expression.binary_expression.logical.logical_expressions;
 
 import codegen.ast.expression.Expression;
 import codegen.ast.expression.binary_expression.logical.LogicalExpression;
 
-public class Or extends LogicalExpression {
+public class BiggerThan extends LogicalExpression {
 
-    public Or(Expression firstOperand, Expression secondOperand) {
+    public BiggerThan(Expression firstOperand, Expression secondOperand) {
         super(firstOperand, secondOperand);
-        super.surrogate = "||";
+        super.surrogate = ">";
     }
 
     @Override
