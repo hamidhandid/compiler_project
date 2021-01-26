@@ -7,23 +7,14 @@ import codegen.symbol_table.stacks.SemanticStack;
 import scanner.classes.CompilerScanner;
 
 public class CodeGenerator implements parser.CodeGenerator {
-    private CodeGenerator() {
-    }
-
     private CompilerScanner lexical;
 
-    public CompilerScanner getLexical() {
-        return lexical;
-    }
-
-    public void initLexical(CompilerScanner lexical) {
+    public CodeGenerator(CompilerScanner lexical) {
         this.lexical = lexical;
     }
 
-    private static CodeGenerator instance = new CodeGenerator();
-
-    public static CodeGenerator getInstance() {
-        return instance;
+    public CompilerScanner getLexical() {
+        return lexical;
     }
 
     @Override
