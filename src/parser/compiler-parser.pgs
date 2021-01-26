@@ -1592,7 +1592,7 @@
         "start": 81,
         "end": 82,
         "token": "MAIN_EXPR",
-        "func": "alaki",
+        "func": "",
         "anchorX": 581.0,
         "anchorY": 441.5,
         "isGraph": true,
