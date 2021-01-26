@@ -4,7 +4,7 @@ import codegen.ast.Compilable;
 import codegen.ast.expression.Expression;
 import codegen.utils.type.TypeChecker;
 
-public abstract class BinaryExpression implements Compilable {
+public abstract class BinaryExpression extends Expression {
 
     protected Expression firstOperand;
     protected Expression secondOperand;
