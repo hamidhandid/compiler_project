@@ -1,5 +1,6 @@
 package codegen;
 
+import codegen.ast.expression.Expression;
 import codegen.ast.expression.binary_expression.arithmetic.Add;
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.symbol_table.stacks.SemanticStack;
@@ -30,11 +31,11 @@ public class CodeGenerator implements parser.CodeGenerator {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-//                int secondOperand = (Integer) SemanticStack.getInstance().pop();
-//                int firstOperand = (Integer) SemanticStack.getInstance().pop();
-//                Add add = new Add(firstOperand, secondOperand);
-//                add.compile();
-//                System.out.println(SemanticStack.getInstance().peek());
+                Expression secondOperand = (Expression) SemanticStack.getInstance().pop();
+                Expression firstOperand = (Expression) SemanticStack.getInstance().pop();
+                Add add = new Add(firstOperand, secondOperand);
+                add.compile();
+                System.out.println(SemanticStack.getInstance().peek());
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
