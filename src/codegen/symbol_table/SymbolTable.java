@@ -2,14 +2,11 @@ package codegen.symbol_table;
 
 import codegen.symbol_table.dscp.Descriptor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTable {
-    private Map<String, Descriptor> symbolTable;
-
-    public SymbolTable(Map<String, Descriptor> symbolTable) {
-        this.symbolTable = symbolTable;
-    }
+    private Map<String, Descriptor> symbolTable = new HashMap<>();
 
     public boolean contains(Descriptor descriptor) {
         return symbolTable.containsKey(descriptor.getName());
