@@ -1,9 +1,14 @@
 import codegen.CodeGenerator;
+import codegen.utils.AssemblyFileWriter;
+import codegen.utils.command.CommandLine;
+import codegen.utils.command.DataLine;
 import parser.Parser;
 import scanner.classes.CompilerScanner;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,14 +17,13 @@ public class Main {
             CodeGenerator codeGen = new CodeGenerator(scanner);
             Parser parser = new Parser(scanner, codeGen, "src/parser/table.npt");
             parser.parse();
-//            AssemblyFileWriter writer = new AssemblyFileWriter("src/codegen/utils/");
-//
-//            ArrayList<String> strings = new ArrayList<>(Arrays.asList("t1", "t2", "t3"));
-//            ArrayList<String> strings2 = new ArrayList<>(Arrays.asList("t4", "t5", "t6"));
-//
-//            AssemblyFileWriter.appendCommand(new CommandLine("ann", strings));
-//            AssemblyFileWriter.appendCommand(new CommandLine("ann2", strings2));
-//            writer.close();
+
+            AssemblyFileWriter writer = new AssemblyFileWriter("src/codegen/utils/");
+            ArrayList<String> strings = new ArrayList<>(Arrays.asList("t1", "t2", "t3"));
+            AssemblyFileWriter.appendCommandToCode(new CommandLine("command1", strings));
+            AssemblyFileWriter.appendCommandToData(new DataLine("nl", "space", "12"));
+            writer.writeOutputFile();
+            writer.close();
         } catch (FileNotFoundException fileNotFoundException) {
             System.err.println("Can not read file");
             fileNotFoundException.printStackTrace();
