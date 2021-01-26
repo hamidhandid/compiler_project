@@ -22,10 +22,9 @@ public class AssemblyFileWriter {
     }
 
     public static void appendCommand(CommandLine commandLine) {
-        ArrayList<String> command = new ArrayList<>(Collections.singletonList(commandLine.getCommand()));
-        command.addAll(commandLine.getOperands());
-        String res = String.join(", ", command);
         try {
+            writer.write(SPACE + commandLine.getCommand());
+            String res = String.join(", ", commandLine.getOperands());
             writer.write(SPACE + res + "\n");
             writer.flush();
         } catch (IOException e) {
