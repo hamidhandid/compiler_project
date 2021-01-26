@@ -22,10 +22,10 @@ public class CodeGenerator implements parser.CodeGenerator {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-                Expression secondOperand = (Expression) SemanticStack.getInstance().pop();
-                Expression firstOperand = (Expression) SemanticStack.getInstance().pop();
-                Add add = new Add(firstOperand, secondOperand);
-                add.compile();
+//                Expression secondOperand = (Expression) SemanticStack.getInstance().pop();
+//                Expression firstOperand = (Expression) SemanticStack.getInstance().pop();
+//                Add add = new Add(firstOperand, secondOperand);
+//                add.compile();
                 System.out.println(SemanticStack.getInstance().peek());
                 break;
             case "sub":
