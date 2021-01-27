@@ -1,4 +1,6 @@
 import codegen.CodeGenerator;
+import codegen.symbol_table.SymbolTable;
+import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
 import codegen.utils.command.CommandLine;
 import codegen.utils.command.DataLine;
@@ -13,15 +15,13 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) {
         try {
+            AssemblyFileWriter writer = new AssemblyFileWriter("src/codegen/utils/");
+            SymbolTableStack.push(new SymbolTable("main"));
             CompilerScanner scanner = new CompilerScanner(new FileReader("src/scanner/files/code1.txt"));
             CodeGenerator codeGen = new CodeGenerator(scanner);
             Parser parser = new Parser(scanner, codeGen, "src/parser/table.npt");
             parser.parse();
 
-            AssemblyFileWriter writer = new AssemblyFileWriter("src/codegen/utils/");
-            ArrayList<String> strings = new ArrayList<>(Arrays.asList("t1", "t2", "t3"));
-            AssemblyFileWriter.appendCommandToCode(new CommandLine("command1", strings));
-            AssemblyFileWriter.appendCommandToData(new DataLine("nl", "space", "12"));
             writer.writeOutputFile();
             writer.close();
         } catch (FileNotFoundException fileNotFoundException) {
