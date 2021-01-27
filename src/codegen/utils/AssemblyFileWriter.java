@@ -6,6 +6,8 @@ import codegen.utils.command.DataLine;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AssemblyFileWriter {
 
@@ -26,13 +28,17 @@ public class AssemblyFileWriter {
         createCompiledFile();
     }
 
-    public static void appendCommandToCode(CommandLine commandLine) {
+    public static void appendCommandToCode(String command, String...operands) {
+        CommandLine commandLine = new CommandLine(command, new ArrayList<>(Arrays.asList(operands)));
         code += (TAB + commandLine.getCommand());
-        String res = String.join(", ", commandLine.getOperands());
-        code += (SPACE + res + NEW_LINE);
+        if (commandLine.getOperands() != null) {
+            String res = String.join(", ", commandLine.getOperands());
+            code += (SPACE + res + NEW_LINE);
+        }
     }
 
-    public static void appendCommandToData(DataLine dataLine) {
+    public static void appendCommandToData(String name, String directive, String value) {
+        DataLine dataLine = new DataLine(name, directive, value);
         data += (TAB + dataLine + NEW_LINE);
     }
 
@@ -44,6 +50,7 @@ public class AssemblyFileWriter {
             code += ".globl main" + NEW_LINE;
             code += "main:" + NEW_LINE;
             data += ".data" + NEW_LINE;
+            appendCommandToData("nl", "asciiz", "\"\\n\"");
         } catch (IOException e) {
             System.err.println("Can not create output file");
             e.printStackTrace();
