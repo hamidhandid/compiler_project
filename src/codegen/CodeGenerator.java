@@ -1,13 +1,23 @@
 package codegen;
 
 import codegen.ast.expression.Expression;
+import codegen.ast.expression.binary_expression.BinaryExpression;
 import codegen.ast.expression.binary_expression.arithmetic.Add;
 import codegen.ast.expression.constant.IntegerConstant;
+import codegen.ast.expression.input.ReadInteger;
+import codegen.ast.statement_block.output.Print;
+import codegen.ast.statement_block.statements.Return;
+import codegen.symbol_table.dscp.Descriptor;
+import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
 import codegen.symbol_table.stacks.SemanticStack;
+import codegen.symbol_table.stacks.SymbolTableStack;
+import codegen.utils.AssemblyFileWriter;
 import scanner.classes.CompilerScanner;
+import scanner.classes.Type;
 
 public class CodeGenerator implements parser.CodeGenerator {
     private CompilerScanner lexical;
+    private static int variableIndex = 0;
 
     public CodeGenerator(CompilerScanner lexical) {
         this.lexical = lexical;
@@ -17,16 +27,24 @@ public class CodeGenerator implements parser.CodeGenerator {
         return lexical;
     }
 
+    public static int getVariableIndex() {
+        return variableIndex;
+    }
+
+    public static void incrementVariableIndex() {
+        variableIndex++;
+    }
+
     @Override
     public void doSemantic(String sem) {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-//                Expression secondOperand = (Expression) SemanticStack.getInstance().pop();
-//                Expression firstOperand = (Expression) SemanticStack.getInstance().pop();
+//                Object secondOperand = (Object) SemanticStack.pop();
+//                Object firstOperand = (Object) SemanticStack.pop();
 //                Add add = new Add(firstOperand, secondOperand);
 //                add.compile();
-                System.out.println(SemanticStack.getInstance().peek());
+//                System.out.println(SemanticStack.top());
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
@@ -82,9 +100,6 @@ public class CodeGenerator implements parser.CodeGenerator {
             case "while":
                 System.out.println("code gen of while");
                 break;
-            case "print":
-                System.out.println("code gen of print");
-                break;
             /* case "assignment":
                 System.out.println("code gen of or");
                 break; */
@@ -99,8 +114,47 @@ public class CodeGenerator implements parser.CodeGenerator {
             case "pop":
                 System.out.println("code gen of pop");
                 break;
+            case "print":
+                new Print("int").compile();
+                break;
+            case "readInteger":
+                new ReadInteger().compile();
+                break;
+            case "returnStatement":
+                new Return().compile();
+                break;
+            case "pushType":
+                SemanticStack.push(changeStringToType(lexical.currentSymbol.getToken()));
+                break;
+            case "pushId":
+                SemanticStack.push(lexical.currentSymbol.getToken());
+                break;
+            case "addDescriptor":
+                String name = (String) SemanticStack.pop();
+                Type type = (Type) SemanticStack.pop();
+                if (!SymbolTableStack.top().contains(name)) {
+                    LocalVariableDescriptor lvs = new LocalVariableDescriptor("addr" + variableIndex, type);
+                    SymbolTableStack.top().addDescriptor(name, lvs);
+                    AssemblyFileWriter.appendCommandToData(lvs.getName(), "space", "4");
+                    incrementVariableIndex();
+                } else {
+                    System.err.println("Variable is defined before");
+                }
+                break;
             default:
                 System.out.println("Rest");
         }
+    }
+
+    Type changeStringToType(String type) {
+        Type res;
+        switch (type) {
+            case "int":
+                res = Type.INTEGER_NUMBER;
+                break;
+            default:
+                res = null;
+        }
+        return res;
     }
 }
