@@ -5,8 +5,7 @@ import codegen.ast.expression.binary_expression.logical.LogicalExpression;
 public class SmallerThanAndEqual extends LogicalExpression {
 
     public SmallerThanAndEqual(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
-        super.surrogate = "<=";
+        super(firstOperand, secondOperand, "<=");
     }
 
     @Override

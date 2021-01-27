@@ -6,8 +6,7 @@ import codegen.ast.expression.binary_expression.logical.LogicalExpression;
 public class BiggerThan extends LogicalExpression {
 
     public BiggerThan(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
-        super.surrogate = ">";
+        super(firstOperand, secondOperand, ">");
     }
 
     @Override

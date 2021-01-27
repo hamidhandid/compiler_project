@@ -6,9 +6,8 @@ import scanner.classes.Type;
 
 public class LogicalExpression extends BinaryExpression implements Comparable {
 
-    public LogicalExpression(Expression firstOperand, Expression secondOperand) {
-        super(firstOperand, secondOperand);
-
+    public LogicalExpression(Expression firstOperand, Expression secondOperand, String operation) {
+        super(firstOperand, secondOperand, operation);
     }
 
     protected void OR(){
