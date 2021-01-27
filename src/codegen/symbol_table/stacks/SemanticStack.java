@@ -2,12 +2,18 @@ package codegen.symbol_table.stacks;
 
 import java.util.Stack;
 
-public class SemanticStack extends Stack<Object> {
-    private static SemanticStack instance = new SemanticStack();
+public class SemanticStack {
+    private static Stack<Object> semanticStack = new Stack<>();
 
-    private SemanticStack() {}
+    public static Object push(Object item) {
+        return semanticStack.push(item);
+    }
 
-    public static SemanticStack getInstance() {
-        return instance;
+    public static Object pop() {
+        return semanticStack.pop();
+    }
+
+    public static Object top() {
+        return semanticStack.peek();
     }
 }

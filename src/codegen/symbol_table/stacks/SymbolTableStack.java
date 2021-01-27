@@ -4,12 +4,18 @@ import codegen.symbol_table.SymbolTable;
 
 import java.util.Stack;
 
-public class SymbolTableStack extends Stack<SymbolTable> {
-    private static SymbolTableStack instance = new SymbolTableStack();
+public class SymbolTableStack {
+    private static Stack<SymbolTable> symbolTableStack = new Stack<>();
 
-    private SymbolTableStack() {}
+    public static SymbolTable push(SymbolTable item) {
+        return symbolTableStack.push(item);
+    }
 
-    public static SymbolTableStack getInstance() {
-        return instance;
+    public static SymbolTable pop() {
+        return symbolTableStack.pop();
+    }
+
+    public static SymbolTable top() {
+        return symbolTableStack.peek();
     }
 }
