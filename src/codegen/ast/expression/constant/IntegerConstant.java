@@ -1,5 +1,6 @@
 package codegen.ast.expression.constant;
 
+import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
 import codegen.symbol_table.stacks.SemanticStack;
 
 public class IntegerConstant extends ConstantExpression{
@@ -12,6 +13,6 @@ public class IntegerConstant extends ConstantExpression{
     @Override
     public void compile() {
         System.out.println(intConst);
-        SemanticStack.getInstance().push(intConst);
+        SemanticStack.push(this);
     }
 }
