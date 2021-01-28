@@ -16,4 +16,10 @@ public class SemanticStack {
     public static Object top() {
         return semanticStack.peek();
     }
+
+    public static void print() {
+        System.out.println("semantic stack = " + semanticStack.toString());
+        System.out.println("size = " + semanticStack.size());
+        System.out.println();
+    }
 }
