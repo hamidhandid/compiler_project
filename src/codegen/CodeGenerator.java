@@ -13,6 +13,7 @@ import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
 import codegen.symbol_table.stacks.SemanticStack;
 import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
+import codegen.utils.DescriptorChecker;
 import scanner.classes.CompilerScanner;
 import scanner.classes.Type;
 
