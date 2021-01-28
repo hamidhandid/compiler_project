@@ -1,11 +1,10 @@
 package codegen;
 
-import codegen.ast.expression.Expression;
-import codegen.ast.expression.binary_expression.BinaryExpression;
 import codegen.ast.expression.binary_expression.arithmetic.Add;
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.ast.expression.input.ReadInteger;
-import codegen.ast.statement_block.output.Print;
+import codegen.ast.statement_block.statements.Print;
+import codegen.ast.statement_block.statements.Assignment;
 import codegen.ast.statement_block.statements.Return;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
@@ -27,24 +26,35 @@ public class CodeGenerator implements parser.CodeGenerator {
         return lexical;
     }
 
-    public static int getVariableIndex() {
+    private static int getVariableIndex() {
         return variableIndex;
     }
 
-    public static void incrementVariableIndex() {
-        variableIndex++;
+    private static void incrementVariableIndex() {
+        ++variableIndex;
+    }
+
+    public static String getVariableName() {
+        incrementVariableIndex();
+        return "adr" + getVariableIndex();
     }
 
     @Override
     public void doSemantic(String sem) {
+        System.out.println("sem = " + sem);
+        try {
+            System.out.println("token = " + lexical.currentSymbol.getToken() + "\n");
+            SemanticStack.print();
+            System.out.println();
+            SymbolTableStack.top().print();
+        } catch (Exception e) {
+        }
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-//                Object secondOperand = (Object) SemanticStack.pop();
-//                Object firstOperand = (Object) SemanticStack.pop();
-//                Add add = new Add(firstOperand, secondOperand);
-//                add.compile();
-//                System.out.println(SemanticStack.top());
+                Object secondOperand = SemanticStack.pop();
+                Object firstOperand = SemanticStack.pop();
+                new Add(firstOperand, secondOperand).compile();
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
@@ -100,9 +110,6 @@ public class CodeGenerator implements parser.CodeGenerator {
             case "while":
                 System.out.println("code gen of while");
                 break;
-            /* case "assignment":
-                System.out.println("code gen of or");
-                break; */
             case "push":
                 System.out.println("code gen of push");
                 break;
@@ -115,35 +122,44 @@ public class CodeGenerator implements parser.CodeGenerator {
                 System.out.println("code gen of pop");
                 break;
             case "print":
-                new Print("int").compile();
+                new Print((Descriptor) SemanticStack.pop()).compile();
                 break;
             case "readInteger":
                 new ReadInteger().compile();
                 break;
             case "returnStatement":
-                new Return().compile();
+                new Return((Descriptor) SemanticStack.pop()).compile();
                 break;
             case "pushType":
                 SemanticStack.push(changeStringToType(lexical.currentSymbol.getToken()));
                 break;
-            case "pushId":
+            case "pushIdDcl":
                 SemanticStack.push(lexical.currentSymbol.getToken());
+                break;
+            case "pushId":
+                SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
                 break;
             case "addDescriptor":
                 String name = (String) SemanticStack.pop();
                 Type type = (Type) SemanticStack.pop();
                 if (!SymbolTableStack.top().contains(name)) {
-                    LocalVariableDescriptor lvs = new LocalVariableDescriptor("addr" + variableIndex, type);
+                    LocalVariableDescriptor lvs = new LocalVariableDescriptor(getVariableName(), type);
                     SymbolTableStack.top().addDescriptor(name, lvs);
-                    AssemblyFileWriter.appendCommandToData(lvs.getName(), "space", "4");
-                    incrementVariableIndex();
+                    AssemblyFileWriter.appendCommandToData(lvs.getName(), "word", "0");
                 } else {
                     System.err.println("Variable is defined before");
                 }
                 break;
+            case "assignment":
+                System.out.println("code gen of assignment");
+                Descriptor rightSide = (Descriptor) SemanticStack.pop();
+                Descriptor leftSide = (Descriptor) SemanticStack.pop();
+                new Assignment(leftSide, rightSide).compile();
+                break;
             default:
                 System.out.println("Rest");
         }
+        System.out.println();
     }
 
     Type changeStringToType(String type) {
