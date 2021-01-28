@@ -37,6 +37,15 @@ public class AssemblyFileWriter {
         }
     }
 
+    public static void appendComment(String comment) {
+        appendCommandToCode("# " + comment);
+    }
+
+    public static void appendDebugLine(String addressName) {
+        appendComment("t7 is just for debugging");
+        appendCommandToCode("lw", "$t7", addressName);
+    }
+
     public static void appendCommandToData(String name, String directive, String value) {
         DataLine dataLine = new DataLine(name, directive, value);
         data += (TAB + dataLine + NEW_LINE);
