@@ -40,4 +40,8 @@ public class SymbolTable {
     public Map<String, Descriptor> getSymbolTable() {
         return symbolTable;
     }
+
+    public void print() {
+        System.out.println("symbol table = " + getSymbolTable().toString());
+    }
 }
