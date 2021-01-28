@@ -154,6 +154,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                 SemanticStack.push(changeStringToType(lexical.currentSymbol.getToken()));
                 break;
             case "pushIdDcl":
+                DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
                 SemanticStack.push(lexical.currentSymbol.getToken());
                 break;
             case "pushId":
