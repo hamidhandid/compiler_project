@@ -12,11 +12,11 @@ import scanner.classes.Type;
 
 public abstract class BinaryExpression extends Expression {
 
-    protected Object firstOperand;
-    protected Object secondOperand;
+    protected Descriptor firstOperand;
+    protected Descriptor secondOperand;
     protected String operation;
 
-    public BinaryExpression(Object firstOperand, Object secondOperand, String operation) {
+    public BinaryExpression(Descriptor firstOperand, Descriptor secondOperand, String operation) {
         this.firstOperand = firstOperand;
         this.secondOperand = secondOperand;
         this.operation = operation;
@@ -25,23 +25,49 @@ public abstract class BinaryExpression extends Expression {
     @Override
     public void compile() {
         System.out.println("BinaryExpr");
-        Descriptor firstOperandDes = (Descriptor) firstOperand;
-        Descriptor secondOperandDes = (Descriptor) secondOperand;
+        Descriptor firstOperandDes = firstOperand;
+        Descriptor secondOperandDes = secondOperand;
         TypeChecker.checkType(firstOperandDes.getType(), secondOperandDes.getType(), "add");
         DescriptorChecker.checkContainsDescriptor(firstOperandDes);
         DescriptorChecker.checkContainsDescriptor(secondOperandDes);
-
+        
+        Type resultType = firstOperandDes.getType();
         String operationCommand;
-        Type type;
         switch (operation) {
             case "+":
                 operationCommand = "add";
-                type = Type.INTEGER_NUMBER;
+                break;
+            case "-":
+                operationCommand = "abs";
+                break;
+            case "/":
+                operationCommand = "div";
+                break;
+            case "*":
+                operationCommand = "mul";
                 break;
             default:
                 operationCommand = null;
-                type = null;
+                resultType = null;
         }
+        
+        // String extention;
+
+        switch (resultType) {
+            case INTEGER_NUMBER:
+                break;
+            case REAL_NUMBER:
+                operationCommand += ".d";
+                break;
+            case STRING:
+                // TODO
+                break;
+            // case for boolean comparison and cvt's
+            default:
+                operationCommand = null;
+                resultType = null;
+        }
+
         String variableName = CodeGenerator.getVariableName();
         AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
         AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
@@ -52,6 +78,6 @@ public abstract class BinaryExpression extends Expression {
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
         AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
-        SemanticStack.push(new LocalVariableDescriptor(variableName, type));
+        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
 }
