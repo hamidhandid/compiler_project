@@ -2,6 +2,7 @@ package codegen.utils;
 
 import codegen.utils.command.CommandLine;
 import codegen.utils.command.DataLine;
+import codegen.utils.command.Label;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -49,6 +50,11 @@ public class AssemblyFileWriter {
     public static void appendCommandToData(String name, String directive, String value) {
         DataLine dataLine = new DataLine(name, directive, value);
         data += (TAB + dataLine + NEW_LINE);
+    }
+
+    public static void addLabel(String name){
+        Label lbl = new Label(name);
+        code += lbl.toString() + NEW_LINE;
     }
 
     private void createCompiledFile() {
