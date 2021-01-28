@@ -1016,6 +1016,9 @@ public class CompilerScanner implements parser.Lexical {
     public String nextToken() {
         try {
             currentSymbol = nextSymbol();
+            if (currentSymbol == null) {
+                return "$";
+            }
             while (currentSymbol.getType() == Type.WHITESPACE) {
                 currentSymbol = nextSymbol();
                 if (currentSymbol == null) {
