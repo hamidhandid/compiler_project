@@ -5,18 +5,18 @@ import scanner.classes.Type;
 import java.util.Objects;
 
 public abstract class Descriptor {
-    private String name;
+    private String addressName;
     private Type type;
     private boolean isLocal;
 
-    public Descriptor(String name, Type type, boolean isLocal) {
-        this.name = name;
+    public Descriptor(String addressName, Type type, boolean isLocal) {
+        this.addressName = addressName;
         this.type = type;
         this.isLocal = isLocal;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String addressName) {
+        this.addressName = addressName;
     }
 
     public void setType(Type type) {
@@ -28,7 +28,7 @@ public abstract class Descriptor {
     }
 
     public String getName() {
-        return name;
+        return addressName;
     }
 
     public boolean getIsLocal() {
@@ -44,12 +44,22 @@ public abstract class Descriptor {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Descriptor that = (Descriptor) o;
-        return Objects.equals(name, that.name) &&
+        return isLocal == that.isLocal &&
+                Objects.equals(addressName, that.addressName) &&
                 type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type);
+        return Objects.hash(addressName, type, isLocal);
+    }
+
+    @Override
+    public String toString() {
+        return "Descriptor{" +
+                "addressName='" + addressName + '\'' +
+                ", type=" + type +
+                ", isLocal=" + isLocal +
+                '}';
     }
 }
