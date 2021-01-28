@@ -22,7 +22,7 @@ public abstract class BinaryExpression extends Expression {
         this.operation = operation;
     }
 
-    private void addorsub(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
+    private String loadAndOperate(Descriptor firstOperandDes, Descriptor secondOperandDes, String operationCommand) {
         String variableName = CodeGenerator.getVariableName();
         AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
         AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
@@ -30,6 +30,12 @@ public abstract class BinaryExpression extends Expression {
         AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
         AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
         AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "$t1");
+        return variableName;
+    }
+
+    private void addorsub(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand);
+
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
         AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
@@ -45,13 +51,7 @@ public abstract class BinaryExpression extends Expression {
     }
     
     private void multiply(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
-        String variableName = CodeGenerator.getVariableName();
-        AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
-        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
-        AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
-        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "$t1");
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand);
         
         AssemblyFileWriter.appendCommandToCode("mfhi", "$t1");
         AssemblyFileWriter.appendCommandToCode("mflo", "$t0");
@@ -72,13 +72,7 @@ public abstract class BinaryExpression extends Expression {
     }
     
     private void divide(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
-        String variableName = CodeGenerator.getVariableName();
-        AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
-        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
-        AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
-        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "$t1");
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand);
         
         AssemblyFileWriter.appendCommandToCode("mfhi", "$t1");
         AssemblyFileWriter.appendCommandToCode("mflo", "$t0");
@@ -129,11 +123,11 @@ public abstract class BinaryExpression extends Expression {
 
         switch (operation) {
             case "+":
-                addorsub(firstOperandDes, secondOperandDes, resultType, "add"+ extention);
+                add(firstOperandDes, secondOperandDes, resultType, "add"+ extention);
                 // operationCommand = "add";
                 break;
             case "-":
-                addorsub(firstOperandDes, secondOperandDes, resultType, "sub"+ extention);
+                subtract(firstOperandDes, secondOperandDes, resultType, "sub"+ extention);
                 // operationCommand = "sub";
                 break;
             case "/":
