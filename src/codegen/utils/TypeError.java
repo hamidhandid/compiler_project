@@ -1,7 +1,8 @@
 package codegen.utils;
+import scanner.classes.Type;
 
 public class TypeError extends RuntimeException {
-    public TypeError(String msg) {
-        super(msg);
+    public TypeError(String operation, Type firstType, Type secondType) {
+        super("TypeError: unsupported operand type(s) for" + operation + ": " + firstType + ", " + secondType);
     }
 }

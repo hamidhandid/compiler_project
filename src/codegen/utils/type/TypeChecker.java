@@ -8,6 +8,6 @@ public class TypeChecker {
         if (firstType == secondType) {
             return true;
         }
-        throw new TypeError("TypeError: unsupported operand type(s) for" + operation + ": " + firstType + ", " + secondType);
+        throw new TypeError(operation, firstType, secondType);
     }
 }
