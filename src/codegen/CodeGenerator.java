@@ -1,6 +1,8 @@
 package codegen;
 
-import codegen.ast.expression.binary_expression.arithmetic.Add;
+import codegen.ast.expression.binary_expression.arithmetic.*;
+import codegen.ast.expression.binary_expression.logical.logical_expressions.And;
+import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.ast.expression.input.ReadInteger;
 import codegen.ast.statement_block.statements.Print;
@@ -49,29 +51,47 @@ public class CodeGenerator implements parser.CodeGenerator {
             SymbolTableStack.top().print();
         } catch (Exception e) {
         }
+        Descriptor firstOperand, secondOperand;
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-                Descriptor secondOperand = (Descriptor) SemanticStack.pop();
-                Descriptor firstOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
                 new Add(firstOperand, secondOperand).compile();
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                new Subtract(firstOperand, secondOperand).compile();
                 break;
             case "mult":
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                new Multiply(firstOperand, secondOperand).compile();
                 System.out.println("code gen of multiply");
                 break;
             case "div":
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                new Divide(firstOperand, secondOperand).compile();
                 System.out.println("code gen of division");
                 break;
             case "and":
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                new And(firstOperand, secondOperand).compile();
                 System.out.println("code gen of and");
                 break;
             case "or":
+                firstOperand = (Descriptor) SemanticStack.pop();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                new Or(firstOperand, secondOperand).compile();
                 System.out.println("code gen of or");
                 break;
             case "not":
+                firstOperand = (Descriptor) SemanticStack.pop();
+                // new Not(firstOperand).compile();
                 System.out.println("code gen of not");
                 break;
             case "biggerThan":
