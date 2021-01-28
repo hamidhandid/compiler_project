@@ -1,5 +1,6 @@
 function void main() {
     int a;
+    int b;
     a = ReadInteger();
     b = a + 3;
     Print(b);
