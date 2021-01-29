@@ -1032,8 +1032,20 @@ public class CompilerScanner implements Lexical {
                 case IDENTIFIER:
                     token = "id";
                     break;
+                case HEX:
                 case INTEGER_NUMBER:
                     token = "int_const";
+                    break;
+                case SCIENTIFIC_NOTATION:
+                case REAL_NUMBER:
+                    token = "double_const";
+                    break;
+                case BOOLEAN:
+                    token = "boolean_const";
+                    break;
+                case ESCAPE_CHAR:
+                case STRING:
+                    token = "string_const";
                     break;
                 default:
                     token = currentSymbol.getToken();

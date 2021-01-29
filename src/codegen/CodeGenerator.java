@@ -12,6 +12,7 @@ import codegen.ast.statement_block.statements.If;
 import codegen.ast.statement_block.statements.Print;
 import codegen.ast.statement_block.statements.Assignment;
 import codegen.ast.statement_block.statements.Return;
+import codegen.ast.statement_block.statements.loops.For;
 import codegen.ast.statement_block.statements.loops.While;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.dscp.array.ArrayDescriptor;
@@ -103,13 +104,13 @@ public class CodeGenerator implements parser.CodeGenerator {
                 new Remainder(firstOperand, secondOperand).compile();
                 System.out.println("code gen of remainder");
                 break;
-            case "and":
+            case "logicalAnd":
                 secondOperand = (Descriptor) SemanticStack.pop();
                 firstOperand = (Descriptor) SemanticStack.pop();
                 new And(firstOperand, secondOperand).compile();
                 System.out.println("code gen of and");
                 break;
-            case "or":
+            case "logicalOr":
                 secondOperand = (Descriptor) SemanticStack.pop();
                 firstOperand = (Descriptor) SemanticStack.pop();
                 new Or(firstOperand, secondOperand).compile();
@@ -191,6 +192,17 @@ public class CodeGenerator implements parser.CodeGenerator {
             case "completeWhile":
                 While.completeWhile();
                 break;
+            case "startConditionFor":
+                For.startCondition();
+                break;
+            case "forJumpZero":
+                new For((Descriptor) SemanticStack.pop()).compile();
+                break;
+            case "completeFor":
+                For.completeFor();
+                For.stepStatement();
+                For.completeStepOfFor();
+                break;
             case "arrayDcl":
                 DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
                 Type arrType = (Type) SemanticStack.top();
@@ -211,15 +223,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                 TypeChecker.checkArrayType(nameOfArrayDes.getType(), newArrayType);
                 ArrayDescriptor ad = new LocalArrayDescriptor(nameOfArrayDes.getName(), newArrayType);
                 SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
-//                SemanticStack.push(ad);
-                int arrSize = Integer.parseInt(sizeDescriptor.getValue());
-                int[] arrInts = new int[arrSize];
-                String[] arrIntsStrings = new String[arrSize];
-                for (int i = 0; i < arrSize; i++) {
-                    arrIntsStrings[i] = String.valueOf(arrInts[i]);
-                }
-                String arr = String.join(",", arrIntsStrings);
-                AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".word", arr);
+                AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
                 break;
             case "arrayAccessAssignment":
                 Descriptor rightSideArr = (Descriptor) SemanticStack.pop();
@@ -233,6 +237,19 @@ public class CodeGenerator implements parser.CodeGenerator {
                 AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
                 AssemblyFileWriter.appendCommandToCode("sw", "t0", "0($t1)");
                 AssemblyFileWriter.appendDebugLine("0($t1)");
+                break;
+            case "arrayAccess":
+                VariableDescriptor arrIndex = (VariableDescriptor) SemanticStack.pop();
+                Descriptor nameOfArrDes = (Descriptor) SemanticStack.pop();
+                AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(arrIndex.getValue()));
+                AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrDes.getName());
+                AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
+                AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t1)");
+                String newVarName = getVariableName();
+                AssemblyFileWriter.appendCommandToCode("sw", "$t0", newVarName);
+                AssemblyFileWriter.appendCommandToData(newVarName, "word", "0");
+                AssemblyFileWriter.appendDebugLine(newVarName);
+                SemanticStack.push(new LocalVariableDescriptor(newVarName, nameOfArrDes.getType()));
                 break;
             case "pushInteger":
                 System.out.println("code gen of push integer");
@@ -257,7 +274,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                 break;
             case "popAndPushArrayType":
                 Object o = SemanticStack.pop();
-                System.out.println(o.toString() + "     <- object top");
+//                System.out.println(o.toString() + "     <- object top");
                 Type type = (Type) o;
                 Type resType = null;
                 switch (type) {
@@ -295,7 +312,6 @@ public class CodeGenerator implements parser.CodeGenerator {
                         LocalVariableDescriptor lvd = new LocalVariableDescriptor(getVariableName(), t);
                         SymbolTableStack.top().addDescriptor(name, lvd);
                         AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
-
                     } else {
                         System.err.println("Variable " + name + " is defined before");
                     }
@@ -318,6 +334,15 @@ public class CodeGenerator implements parser.CodeGenerator {
         switch (type) {
             case "int":
                 res = Type.INTEGER_NUMBER;
+                break;
+            case "double":
+                res = Type.REAL_NUMBER;
+                break;
+            case "string":
+                res = Type.STRING;
+                break;
+            case "bool":
+                res = Type.BOOLEAN;
                 break;
             default:
                 res = null;
