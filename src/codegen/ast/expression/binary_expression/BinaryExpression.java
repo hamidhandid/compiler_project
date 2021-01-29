@@ -205,6 +205,7 @@ public abstract class BinaryExpression extends Expression {
                 // operationCommand = "sub";
                 break;
             case "/":
+                //TODO: division by 0
                 divide(firstOperandDes, secondOperandDes, resultType, "div"+ extention, storeCommand, loadCommand);
                 // operationCommand = "div";
                 break;
@@ -214,7 +215,11 @@ public abstract class BinaryExpression extends Expression {
                 break;
             case "%":
                 //TODO: Check if both are int
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem", storeCommand, loadCommand);
+                if(firstOperandDes.getType() == Type.INTEGER_NUMBER && secondOperandDes.getType() == Type.INTEGER_NUMBER ) {
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem", storeCommand, loadCommand);
+                }
+                else
+                    throw new TypeError("%", firstOperandDes.getType(), firstOperandDes.getType());
                 break;
         // and, or, xor
             case "&&":
