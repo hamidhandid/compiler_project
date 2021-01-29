@@ -2,9 +2,10 @@ package codegen;
 
 import codegen.ast.declaration.variable_declaration.LocalVariableDeclaration;
 import codegen.ast.expression.binary_expression.arithmetic.*;
-import codegen.ast.expression.binary_expression.logical.logical_expressions.And;
+import codegen.ast.expression.binary_expression.logical.logical_expressions.*;
+/*import codegen.ast.expression.binary_expression.logical.logical_expressions.Not;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
-import codegen.ast.expression.binary_expression.logical.logical_expressions.SmallerThan;
+import codegen.ast.expression.binary_expression.logical.logical_expressions.SmallerThan;*/
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.ast.expression.input.ReadInteger;
 import codegen.ast.statement_block.statements.If;
@@ -80,57 +81,84 @@ public class CodeGenerator implements parser.CodeGenerator {
                 break;
             case "sub":
                 System.out.println("code gen of subtract");
-                firstOperand = (Descriptor) SemanticStack.pop();
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new Subtract(firstOperand, secondOperand).compile();
                 break;
             case "mult":
-                firstOperand = (Descriptor) SemanticStack.pop();
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new Multiply(firstOperand, secondOperand).compile();
                 System.out.println("code gen of multiply");
                 break;
             case "div":
-                firstOperand = (Descriptor) SemanticStack.pop();
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new Divide(firstOperand, secondOperand).compile();
                 System.out.println("code gen of division");
                 break;
-            case "and":
-                firstOperand = (Descriptor) SemanticStack.pop();
+            case "reminder":
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new Remainder(firstOperand, secondOperand).compile();
+                System.out.println("code gen of remainder");
+                break;
+            case "and":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new And(firstOperand, secondOperand).compile();
                 System.out.println("code gen of and");
                 break;
             case "or":
-                firstOperand = (Descriptor) SemanticStack.pop();
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new Or(firstOperand, secondOperand).compile();
                 System.out.println("code gen of or");
                 break;
+            case "xor":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new Xor(firstOperand, secondOperand).compile();
+                System.out.println("code gen of xor");
+                break;
             case "not":
                 firstOperand = (Descriptor) SemanticStack.pop();
-                // new Not(firstOperand).compile();
+                new Not(firstOperand).compile();
                 System.out.println("code gen of not");
                 break;
             case "biggerThan":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new BiggerThan(firstOperand, secondOperand).compile();
                 System.out.println("code gen of biggerThan");
                 break;
             case "biggerThanAndEqual":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new BiggerThanAndEqual(firstOperand, secondOperand).compile();
                 System.out.println("code gen of biggerThanAndEqual");
                 break;
             case "smallerThan":
-                Descriptor des2 = (Descriptor) SemanticStack.pop();
-                Descriptor des1 = (Descriptor) SemanticStack.pop();
-                new SmallerThan(des1, des2).compile();
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new SmallerThan(firstOperand, secondOperand).compile();
                 break;
             case "smallerThanAndEqual":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new SmallerThanAndEqual(firstOperand, secondOperand).compile();
                 System.out.println("code gen of smallerThanAndEqual");
                 break;
             case "equal":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new Equal(firstOperand, secondOperand).compile();
                 System.out.println("code gen of equal");
                 break;
             case "notEqual":
+                secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
+                new NotEqual(firstOperand, secondOperand).compile();
                 System.out.println("code gen of notEqual");
                 break;
             case "return":
