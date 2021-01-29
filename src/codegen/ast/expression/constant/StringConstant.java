@@ -25,7 +25,6 @@ public class StringConstant extends ConstantExpression {
         descriptor.setValue(stringConst);
         SemanticStack.push(descriptor);
         AssemblyFileWriter.appendComment("string constant");
-//        AssemblyFileWriter.appendCommandToCode("sw", "$f0", variableName);
         SymbolTableStack.top().addDescriptor("$$" + stringConst, descriptor);
         AssemblyFileWriter.appendCommandToData(variableName, "asciiz", "\"" + stringConst + "\"");
         AssemblyFileWriter.appendDebugLine(variableName);

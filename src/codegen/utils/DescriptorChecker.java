@@ -1,5 +1,6 @@
 package codegen.utils;
 
+import codegen.symbol_table.GlobalSymbolTable;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.stacks.SymbolTableStack;
 
@@ -19,6 +20,16 @@ public class DescriptorChecker {
         if (SymbolTableStack.top().contains(name)) {
             try {
                 throw new Exception("Symbol table has descriptor with name " + name + " before");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void checkNotContainsDescriptorGlobal(String name) {
+        if (GlobalSymbolTable.getSymbolTable().contains(name)) {
+            try {
+                throw new Exception("Global Symbol table has descriptor with name " + name + " before");
             } catch (Exception e) {
                 e.printStackTrace();
             }

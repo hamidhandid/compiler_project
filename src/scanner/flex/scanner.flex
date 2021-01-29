@@ -16,7 +16,8 @@ package scanner.classes;
     public int intValue = 0;
     public float realValue = 0.0f;
     public boolean booleanValue;
-    public StringBuffer string  = new StringBuffer();
+    private StringBuffer string  = new StringBuffer();
+    public String stringValue = "";
     private Symbol symbol(String token, Type type) {
         return new Symbol(token, type);
     }
@@ -179,12 +180,12 @@ StringLiteral = \"
 
 <STRING> {
     \"            {
-                        yybegin(YYINITIAL);
                         string.append(yytext());
-                        String value = string.toString();
-                        System.out.println(value);
+                        stringValue = string.toString();
+                        System.out.println(stringValue);
                         string = new StringBuffer();
-                        return symbol(value, Type.STRING);
+                        yybegin(YYINITIAL);
+                        return symbol(stringValue, Type.STRING);
                     }
     [^\r\n\t\"\'\\]+  {string.append(yytext()); return symbol(yytext(), Type.STRING);}
     "\\r"   {string.append("\r"); return symbol(yytext(), Type.ESCAPE_CHAR);}
