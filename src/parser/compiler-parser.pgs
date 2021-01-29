@@ -605,7 +605,7 @@
         "isFinal": false
       },
       {
-        "x": 1083.0,
+        "x": 1159.0,
         "y": 461.0,
         "id": 37,
         "isFinal": true
@@ -654,7 +654,7 @@
         "start": 38,
         "end": 37,
         "token": "EXPR",
-        "func": "",
+        "func": "smallerThan",
         "anchorX": 926.0,
         "anchorY": 465.0,
         "isGraph": true,
@@ -1722,7 +1722,7 @@
         "start": 86,
         "end": 87,
         "token": "MAIN_EXPR",
-        "func": "assignment2",
+        "func": "assignment",
         "anchorX": 581.0,
         "anchorY": 441.5,
         "isGraph": true,
@@ -2616,7 +2616,7 @@
         "start": 137,
         "end": 136,
         "token": "]",
-        "func": "arrayAccessAssignment",
+        "func": "arrayAccessAssignment2",
         "anchorX": 654.0,
         "anchorY": 350.5,
         "isGraph": false,

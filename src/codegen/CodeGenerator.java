@@ -4,6 +4,7 @@ import codegen.ast.declaration.variable_declaration.LocalVariableDeclaration;
 import codegen.ast.expression.binary_expression.arithmetic.*;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.And;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
+import codegen.ast.expression.binary_expression.logical.logical_expressions.SmallerThan;
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.ast.expression.input.ReadInteger;
 import codegen.ast.statement_block.statements.If;
@@ -119,7 +120,9 @@ public class CodeGenerator implements parser.CodeGenerator {
                 System.out.println("code gen of biggerThanAndEqual");
                 break;
             case "smallerThan":
-                System.out.println("code gen of smallerThan");
+                Descriptor des1 = (Descriptor) SemanticStack.pop();
+                Descriptor des2 = (Descriptor) SemanticStack.pop();
+                new SmallerThan(des1, des2).compile();
                 break;
             case "smallerThanAndEqual":
                 System.out.println("code gen of smallerThanAndEqual");
