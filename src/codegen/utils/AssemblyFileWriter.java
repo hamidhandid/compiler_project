@@ -29,7 +29,7 @@ public class AssemblyFileWriter {
         createCompiledFile();
     }
 
-    public static void appendCommandToCode(String command, String...operands) {
+    public static void appendCommandToCode(String command, String... operands) {
         CommandLine commandLine = new CommandLine(command, new ArrayList<>(Arrays.asList(operands)));
         code += (TAB + commandLine.getCommand());
         if (commandLine.getOperands() != null) {
@@ -52,10 +52,26 @@ public class AssemblyFileWriter {
         data += (TAB + dataLine + NEW_LINE);
     }
 
-    public static void addLabel(String name){
+    public static void addLabel(String name) {
         Label lbl = new Label(name);
         code += lbl.toString() + NEW_LINE;
     }
+
+    public static void replaceInDataArray(String nameOfAddress, int index, String dataToReplace) {
+        int indexOfData = data.indexOf(nameOfAddress);
+        indexOfData += nameOfAddress.length() + 2;
+        int indexOfFirstElement = data.indexOf(",", indexOfData);
+        int indexOfNextCommand = data.indexOf("\n", indexOfData);
+        while (data.charAt(indexOfFirstElement) != ' ') {
+            indexOfFirstElement--;
+        }
+        String arrString = data.substring(indexOfFirstElement, indexOfNextCommand);
+        String[] arr = arrString.split(",");
+        arr[index] = dataToReplace;
+        String res = String.join(",", arr);
+        data = data.replace(arrString, res);
+    }
+
 
     private void createCompiledFile() {
         try {

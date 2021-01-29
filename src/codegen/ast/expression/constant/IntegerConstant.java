@@ -4,6 +4,7 @@ import codegen.CodeGenerator;
 import codegen.symbol_table.SymbolTable;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
+import codegen.symbol_table.dscp.variables.VariableDescriptor;
 import codegen.symbol_table.stacks.SemanticStack;
 import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
@@ -20,7 +21,8 @@ public class IntegerConstant extends ConstantExpression{
     public void compile() {
         System.out.println(intConst);
         String variableName = CodeGenerator.getVariableName();
-        Descriptor descriptor = new LocalVariableDescriptor(variableName, Type.INTEGER_NUMBER);
+        VariableDescriptor descriptor = new LocalVariableDescriptor(variableName, Type.INTEGER_NUMBER);
+        descriptor.setValue(String.valueOf(intConst));
         SemanticStack.push(descriptor);
         AssemblyFileWriter.appendComment("integer constant");
         AssemblyFileWriter.appendCommandToCode("li", "$t0", String.valueOf(intConst));
