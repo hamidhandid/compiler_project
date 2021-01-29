@@ -9,4 +9,8 @@ public abstract class DeclarationWithType extends Declaration {
         super(name);
         this.type = type;
     }
+
+    public Type getType() {
+        return type;
+    }
 }

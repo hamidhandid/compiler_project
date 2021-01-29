@@ -14,4 +14,14 @@ public class DescriptorChecker {
             }
         }
     }
+
+    public static void checkNotContainsDescriptor(String name) {
+        if (SymbolTableStack.top().contains(name)) {
+            try {
+                throw new Exception("Symbol table has descriptor with name " + name + " before");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -1,8 +1,6 @@
 function void main() {
-    int a;
-    int b;
-    a = ReadInteger();
-    b = a + 3;
-    Print(b);
+    int [] a;
+    a = New Array(100, int);
+    a[5] = 7;
     return 0;
 }

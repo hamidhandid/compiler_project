@@ -14,4 +14,8 @@ public enum Type {
     OPERATOR_AND_PUNCTUATION,
     WHITESPACE,
     UNDEFINED,
+    INT_ARRAY,
+    BOOL_ARRAY,
+    STRING_ARRAY,
+    DOUBLE_ARRAY
 }

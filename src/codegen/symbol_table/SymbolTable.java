@@ -36,12 +36,7 @@ public class SymbolTable {
         return false;
     }
 
-
-    public Map<String, Descriptor> getSymbolTable() {
-        return symbolTable;
-    }
-
     public void print() {
-        System.out.println("symbol table = " + getSymbolTable().toString());
+        System.out.println("symbol table = " + symbolTable.toString());
     }
 }

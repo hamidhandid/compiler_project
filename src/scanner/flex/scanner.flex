@@ -66,15 +66,15 @@ If = "if"
 Else = "else"
 Return = "return"
 Break = "break"
-New = "new"
-NewArray = "NewArray"
+New = "New"
+Array = "Array"
 Print = "Print"
 ReadInteger = "ReadInteger"
 ReadLine = "ReadLine"
 Continue = "continue"
 False = "false"
 True = "true"
-ReservedKeyword = {Function} | {Void} | {Int} | {Double} | {Bool} | {String} | {Record} | {For} | {While} | {If} | {Else} | {Return} | {Break} | {New} | {NewArray} | {Print} | {ReadInteger} | {ReadLine} | {Continue} | {False} | {True}
+ReservedKeyword = {Function} | {Void} | {Int} | {Double} | {Bool} | {String} | {Record} | {For} | {While} | {If} | {Else} | {Return} | {Break} | {New} | {Array} | {Print} | {ReadInteger} | {ReadLine} | {Continue} | {False} | {True}
 
 // Operators and Punctuations
 Add = "+"

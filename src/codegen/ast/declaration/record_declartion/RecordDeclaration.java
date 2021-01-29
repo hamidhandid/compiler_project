@@ -1,9 +1,14 @@
 package codegen.ast.declaration.record_declartion;
 
 import codegen.ast.declaration.Declaration;
-import scanner.classes.Type;
+import codegen.symbol_table.dscp.variables.RecordVariableDescriptor;
+
+import java.util.List;
 
 public class RecordDeclaration extends Declaration {
+
+    private List<RecordVariableDescriptor> variableDescriptors;
+    private String type;
 
     public RecordDeclaration(String name) {
         super(name);
@@ -11,6 +16,6 @@ public class RecordDeclaration extends Declaration {
 
     @Override
     public void compile() {
-
+//        GlobalSymbolTable.getSymbolTable().addDescriptor(new RecordDes(getName(), ));
     }
 }
