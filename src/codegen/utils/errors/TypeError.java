@@ -1,4 +1,4 @@
-package codegen.utils;
+package codegen.utils.errors;
 import scanner.classes.Type;
 
 public class TypeError extends RuntimeException {

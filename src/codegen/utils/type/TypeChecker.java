@@ -1,6 +1,6 @@
 package codegen.utils.type;
 
-import codegen.utils.TypeError;
+import codegen.utils.errors.TypeError;
 import scanner.classes.Type;
 
 public class TypeChecker {
