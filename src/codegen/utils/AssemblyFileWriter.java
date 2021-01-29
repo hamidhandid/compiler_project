@@ -57,6 +57,10 @@ public class AssemblyFileWriter {
         code += lbl.toString() + NEW_LINE;
     }
 
+    public static void deleteLabel(String label) {
+        code = code.replaceFirst(label + ":", "");
+    }
+
     public static void replaceInDataArray(String nameOfAddress, int index, String dataToReplace) {
         int indexOfData = data.indexOf(nameOfAddress);
         indexOfData += nameOfAddress.length() + 2;
