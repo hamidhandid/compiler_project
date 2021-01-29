@@ -8,7 +8,7 @@ function void main() {
     } else {
     	Print(b);
     }
-    while (b < a) {
+    while (a < b) {
         Print(68);
         a = a + 1;
     }

@@ -35,9 +35,9 @@ main:
 		sw $t0, adr6
 		# t7 is just for debugging 
 		lw $t7, adr6
-		# binary slt expression of adr6, adr5 
-		la $t0, adr6
-		la $t1, adr5
+		# binary slt expression of adr5, adr6 
+		la $t0, adr5
+		la $t1, adr6
 		lw $t0, 0($t0)
 		lw $t1, 0($t1)
 		slt $t0, $t0, $t1

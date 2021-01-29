@@ -74,8 +74,8 @@ public class CodeGenerator implements parser.CodeGenerator {
         switch (sem) {
             case "add":
                 System.out.println("code gen of add");
-                firstOperand = (Descriptor) SemanticStack.pop();
                 secondOperand = (Descriptor) SemanticStack.pop();
+                firstOperand = (Descriptor) SemanticStack.pop();
                 new Add(firstOperand, secondOperand).compile();
                 break;
             case "sub":
@@ -120,8 +120,8 @@ public class CodeGenerator implements parser.CodeGenerator {
                 System.out.println("code gen of biggerThanAndEqual");
                 break;
             case "smallerThan":
-                Descriptor des1 = (Descriptor) SemanticStack.pop();
                 Descriptor des2 = (Descriptor) SemanticStack.pop();
+                Descriptor des1 = (Descriptor) SemanticStack.pop();
                 new SmallerThan(des1, des2).compile();
                 break;
             case "smallerThanAndEqual":
