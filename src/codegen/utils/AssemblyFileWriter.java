@@ -61,22 +61,6 @@ public class AssemblyFileWriter {
         code = code.replaceFirst(label + ":", "");
     }
 
-    public static void replaceInDataArray(String nameOfAddress, int index, String dataToReplace) {
-        int indexOfData = data.indexOf(nameOfAddress);
-        indexOfData += nameOfAddress.length() + 2;
-        int indexOfFirstElement = data.indexOf(",", indexOfData);
-        int indexOfNextCommand = data.indexOf("\n", indexOfData);
-        while (data.charAt(indexOfFirstElement) != ' ') {
-            indexOfFirstElement--;
-        }
-        String arrString = data.substring(indexOfFirstElement, indexOfNextCommand);
-        String[] arr = arrString.split(",");
-        arr[index] = dataToReplace;
-        String res = String.join(",", arr);
-        data = data.replace(arrString, res);
-    }
-
-
     private void createCompiledFile() {
         try {
             writer = new BufferedWriter(new FileWriter(filePath + OUTPUT_ASSEMBLY_FILE_NAME));
@@ -86,6 +70,8 @@ public class AssemblyFileWriter {
             code += "main:" + NEW_LINE;
             data += ".data" + NEW_LINE;
             appendCommandToData("nl", "asciiz", "\"\\n\"");
+            appendCommandToData("strbuffer", "space", "20");
+            appendCommandToData("stradr", "word", "0");
         } catch (IOException e) {
             System.err.println("Can not create output file");
             e.printStackTrace();
