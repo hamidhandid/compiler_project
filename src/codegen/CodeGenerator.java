@@ -7,7 +7,11 @@ import codegen.ast.expression.binary_expression.logical.logical_expressions.*;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.SmallerThan;*/
 import codegen.ast.expression.constant.IntegerConstant;
+import codegen.ast.expression.constant.RealConstant;
+import codegen.ast.expression.constant.StringConstant;
 import codegen.ast.expression.input.ReadInteger;
+import codegen.ast.expression.input.ReadLine;
+import codegen.ast.expression.input.ReadReal;
 import codegen.ast.statement_block.statements.If;
 import codegen.ast.statement_block.statements.Print;
 import codegen.ast.statement_block.statements.Assignment;
@@ -73,261 +77,300 @@ public class CodeGenerator implements parser.CodeGenerator {
         } catch (Exception e) {
         }
         Descriptor firstOperand, secondOperand;
-        switch (sem) {
-            case "add":
-                System.out.println("code gen of add");
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Add(firstOperand, secondOperand).compile();
-                break;
-            case "sub":
-                System.out.println("code gen of subtract");
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Subtract(firstOperand, secondOperand).compile();
-                break;
-            case "mult":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Multiply(firstOperand, secondOperand).compile();
-                System.out.println("code gen of multiply");
-                break;
-            case "div":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Divide(firstOperand, secondOperand).compile();
-                System.out.println("code gen of division");
-                break;
-            case "reminder":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Remainder(firstOperand, secondOperand).compile();
-                System.out.println("code gen of remainder");
-                break;
-            case "logicalAnd":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new And(firstOperand, secondOperand).compile();
-                System.out.println("code gen of and");
-                break;
-            case "logicalOr":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Or(firstOperand, secondOperand).compile();
-                System.out.println("code gen of or");
-                break;
-            case "xor":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Xor(firstOperand, secondOperand).compile();
-                System.out.println("code gen of xor");
-                break;
-            case "not":
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Not(firstOperand).compile();
-                System.out.println("code gen of not");
-                break;
-            case "biggerThan":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new BiggerThan(firstOperand, secondOperand).compile();
-                System.out.println("code gen of biggerThan");
-                break;
-            case "biggerThanAndEqual":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new BiggerThanAndEqual(firstOperand, secondOperand).compile();
-                System.out.println("code gen of biggerThanAndEqual");
-                break;
-            case "smallerThan":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new SmallerThan(firstOperand, secondOperand).compile();
-                break;
-            case "smallerThanAndEqual":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new SmallerThanAndEqual(firstOperand, secondOperand).compile();
-                System.out.println("code gen of smallerThanAndEqual");
-                break;
-            case "equal":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new Equal(firstOperand, secondOperand).compile();
-                System.out.println("code gen of equal");
-                break;
-            case "notEqual":
-                secondOperand = (Descriptor) SemanticStack.pop();
-                firstOperand = (Descriptor) SemanticStack.pop();
-                new NotEqual(firstOperand, secondOperand).compile();
-                System.out.println("code gen of notEqual");
-                break;
-            case "return":
-                System.out.println("code gen of return");
-                break;
-            case "break":
-                System.out.println("code gen of break");
-                break;
-            case "for":
-                System.out.println("code gen of for");
-                break;
-            case "if":
-                new If((Descriptor) SemanticStack.pop()).compile();
-                break;
-            case "completeIf":
-                If.completeIf();
-                break;
-            case "else":
-                If.elseCode();
-                break;
-            case "completeElse":
-                If.completeElse();
-                break;
-            case "startConditionWhile":
-                While.startCondition();
-                break;
-            case "whileJumpZero":
-                new While((Descriptor) SemanticStack.pop()).compile();
-                break;
-            case "completeWhile":
-                While.completeWhile();
-                break;
-            case "startConditionFor":
-                For.startCondition();
-                break;
-            case "forJumpZero":
-                new For((Descriptor) SemanticStack.pop()).compile();
-                break;
-            case "completeFor":
-                For.completeFor();
-                For.stepStatement();
-                For.completeStepOfFor();
-                break;
-            case "arrayDcl":
-                DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
-                Type arrType = (Type) SemanticStack.top();
-                if (!SymbolTableStack.top().contains(lexical.currentSymbol.getToken())) {
-                    LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), arrType);
-                    SymbolTableStack.top().addDescriptor(lexical.currentSymbol.getToken(), lad);
+        try {
+
+
+            switch (sem) {
+                case "add":
+                    System.out.println("code gen of add");
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Add(firstOperand, secondOperand).compile();
+                    break;
+                case "sub":
+                    System.out.println("code gen of subtract");
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Subtract(firstOperand, secondOperand).compile();
+                    break;
+                case "mult":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Multiply(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of multiply");
+                    break;
+                case "div":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Divide(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of division");
+                    break;
+                case "reminder":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Remainder(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of remainder");
+                    break;
+                case "logicalAnd":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new And(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of and");
+                    break;
+                case "logicalOr":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Or(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of or");
+                    break;
+                case "xor":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Xor(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of xor");
+                    break;
+                case "not":
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Not(firstOperand).compile();
+                    System.out.println("code gen of not");
+                    break;
+                case "biggerThan":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new BiggerThan(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of biggerThan");
+                    break;
+                case "biggerThanAndEqual":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new BiggerThanAndEqual(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of biggerThanAndEqual");
+                    break;
+                case "smallerThan":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new SmallerThan(firstOperand, secondOperand).compile();
+                    break;
+                case "smallerThanAndEqual":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new SmallerThanAndEqual(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of smallerThanAndEqual");
+                    break;
+                case "equal":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Equal(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of equal");
+                    break;
+                case "notEqual":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new NotEqual(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of notEqual");
+                    break;
+                case "return":
+                    System.out.println("code gen of return");
+                    break;
+                case "break":
+                    System.out.println("code gen of break");
+                    break;
+                case "for":
+                    System.out.println("code gen of for");
+                    break;
+                case "if":
+                    new If((Descriptor) SemanticStack.pop()).compile();
+                    break;
+                case "completeIf":
+                    If.completeIf();
+                    break;
+                case "else":
+                    If.elseCode();
+                    break;
+                case "completeElse":
+                    If.completeElse();
+                    break;
+                case "startConditionWhile":
+                    While.startCondition();
+                    break;
+                case "whileJumpZero":
+                    new While((Descriptor) SemanticStack.pop()).compile();
+                    break;
+                case "completeWhile":
+                    While.completeWhile();
+                    break;
+                case "startConditionFor":
+                    For.startCondition();
+                    break;
+                case "forJumpZero":
+                    new For((Descriptor) SemanticStack.pop()).compile();
+                    break;
+                case "completeFor":
+                    For.completeFor();
+                    For.stepStatement();
+                    For.completeStepOfFor();
+                    break;
+                case "arrayDcl":
+                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    Type arrType = (Type) SemanticStack.top();
+                    if (!SymbolTableStack.top().contains(lexical.currentSymbol.getToken())) {
+                        LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), arrType);
+                        SymbolTableStack.top().addDescriptor(lexical.currentSymbol.getToken(), lad);
 //                    AssemblyFileWriter.appendCommandToData(lad.getName(), "word", "0");
-                    SemanticStack.push(lexical.currentSymbol.getToken());
-                } else {
-                    System.err.println("Variable is defined before");
-                }
-                break;
-            case "setArrayDescriptor":
-                Type newArrayType = (Type) SemanticStack.pop();
-                LocalVariableDescriptor sizeDescriptor = (LocalVariableDescriptor) SemanticStack.pop();
-                ArrayDescriptor nameOfArrayDes = (ArrayDescriptor) SemanticStack.pop();
-                DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
-                TypeChecker.checkArrayType(nameOfArrayDes.getType(), newArrayType);
-                ArrayDescriptor ad = new LocalArrayDescriptor(nameOfArrayDes.getName(), newArrayType);
-                SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
-                AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
-                break;
-            case "arrayAccessAssignment":
-                Descriptor rightSideArr = (Descriptor) SemanticStack.pop();
-                VariableDescriptor indexDes = (VariableDescriptor) SemanticStack.pop();
-                Descriptor nameOfArrayDesc = (Descriptor) SemanticStack.pop();
-                int index = Integer.parseInt(indexDes.getValue());
-                AssemblyFileWriter.appendCommandToCode("la", "$t0", rightSideArr.getName());
-                AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
-                AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index));
-                AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrayDesc.getName());
-                AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
-                AssemblyFileWriter.appendCommandToCode("sw", "t0", "0($t1)");
-                AssemblyFileWriter.appendDebugLine("0($t1)");
-                break;
-            case "arrayAccess":
-                VariableDescriptor arrIndex = (VariableDescriptor) SemanticStack.pop();
-                Descriptor nameOfArrDes = (Descriptor) SemanticStack.pop();
-                AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(arrIndex.getValue()));
-                AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrDes.getName());
-                AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
-                AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t1)");
-                String newVarName = getVariableName();
-                AssemblyFileWriter.appendCommandToCode("sw", "$t0", newVarName);
-                AssemblyFileWriter.appendCommandToData(newVarName, "word", "0");
-                AssemblyFileWriter.appendDebugLine(newVarName);
-                SemanticStack.push(new LocalVariableDescriptor(newVarName, nameOfArrDes.getType()));
-                break;
-            case "pushInteger":
-                System.out.println("code gen of push integer");
-                //TODO (Check if constant is in symbol table)
-                IntegerConstant intConst = new IntegerConstant(lexical.intValue);
-                intConst.compile();
-                break;
-            case "pop":
-                System.out.println("code gen of pop");
-                break;
-            case "print":
-                new Print((Descriptor) SemanticStack.pop()).compile();
-                break;
-            case "readInteger":
-                new ReadInteger().compile();
-                break;
-            case "returnStatement":
-                new Return((Descriptor) SemanticStack.pop()).compile();
-                break;
-            case "pushType":
-                SemanticStack.push(changeStringToType(lexical.currentSymbol.getToken()));
-                break;
-            case "popAndPushArrayType":
-                Object o = SemanticStack.pop();
-//                System.out.println(o.toString() + "     <- object top");
-                Type type = (Type) o;
-                Type resType = null;
-                switch (type) {
-                    case BOOLEAN:
-                        resType = Type.BOOL_ARRAY;
-                        break;
-                    case INTEGER_NUMBER:
-                        resType = Type.INT_ARRAY;
-                        break;
-                    case REAL_NUMBER:
-                        resType = Type.DOUBLE_ARRAY;
-                        break;
-                    case STRING:
-                        resType = Type.STRING_ARRAY;
-                        break;
-                }
-                SemanticStack.push(resType);
-                break;
-            case "pushIdDcl":
-                DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
-                SemanticStack.push(lexical.currentSymbol.getToken());
-                break;
-            case "pushId":
-                SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
-                break;
-            case "addDescriptor":
-                String name = (String) SemanticStack.pop();
-                Type t = (Type) SemanticStack.pop();
-                if (TypeChecker.isArrayType(t)) {
-                    LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), t);
-                    lad.setRealName(name);
-                    SymbolTableStack.top().addDescriptor(name, lad);
-                } else {
-                    if (!SymbolTableStack.top().contains(name)) {
-                        LocalVariableDescriptor lvd = new LocalVariableDescriptor(getVariableName(), t);
-                        SymbolTableStack.top().addDescriptor(name, lvd);
-                        AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
+                        SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        System.err.println("Variable " + name + " is defined before");
+                        System.err.println("Variable is defined before");
                     }
-                }
-                break;
-            case "assignment":
-                System.out.println("code gen of assignment");
-                Descriptor rightSide = (Descriptor) SemanticStack.pop();
-                Descriptor leftSide = (Descriptor) SemanticStack.pop();
-                new Assignment(leftSide, rightSide).compile();
-                break;
-            default:
-                System.out.println("Rest");
+                    break;
+                case "setArrayDescriptor":
+                    Type newArrayType = (Type) SemanticStack.pop();
+                    LocalVariableDescriptor sizeDescriptor = (LocalVariableDescriptor) SemanticStack.pop();
+                    ArrayDescriptor nameOfArrayDes = (ArrayDescriptor) SemanticStack.pop();
+                    DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
+                    TypeChecker.checkArrayType(nameOfArrayDes.getType(), newArrayType);
+                    ArrayDescriptor ad = new LocalArrayDescriptor(nameOfArrayDes.getName(), newArrayType);
+                    SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
+                    AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
+                    break;
+                case "arrayAccessAssignment":
+                    Descriptor rightSideArr = (Descriptor) SemanticStack.pop();
+                    VariableDescriptor indexDes = (VariableDescriptor) SemanticStack.pop();
+                    Descriptor nameOfArrayDesc = (Descriptor) SemanticStack.pop();
+                    int index = Integer.parseInt(indexDes.getValue());
+                    AssemblyFileWriter.appendCommandToCode("la", "$t0", rightSideArr.getName());
+                    AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+                    AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index));
+                    AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrayDesc.getName());
+                    AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
+                    AssemblyFileWriter.appendCommandToCode("sw", "t0", "0($t1)");
+                    AssemblyFileWriter.appendDebugLine("0($t1)");
+                    break;
+                case "arrayAccess":
+                    VariableDescriptor arrIndex = (VariableDescriptor) SemanticStack.pop();
+                    Descriptor nameOfArrDes = (Descriptor) SemanticStack.pop();
+                    AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(arrIndex.getValue()));
+                    AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrDes.getName());
+                    AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
+                    AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t1)");
+                    String newVarName = getVariableName();
+                    AssemblyFileWriter.appendCommandToCode("sw", "$t0", newVarName);
+                    AssemblyFileWriter.appendCommandToData(newVarName, "word", "0");
+                    AssemblyFileWriter.appendDebugLine(newVarName);
+                    SemanticStack.push(new LocalVariableDescriptor(newVarName, nameOfArrDes.getType()));
+                    break;
+                case "trueCode":
+                    new IntegerConstant(1).compile();
+                    System.out.println("asdsadsadsadas");
+                    break;
+                case "falseCode":
+                    new IntegerConstant(0).compile();
+                    break;
+                case "pushInteger":
+                    System.out.println("code gen of push integer");
+                    //TODO (Check if constant is in symbol table)
+                    IntegerConstant intConst = new IntegerConstant(lexical.intValue);
+                    intConst.compile();
+                    break;
+                case "pushBool":
+//                System.out.println("code gen of push integer");
+//                //TODO (Check if constant is in symbol table)
+//                IntegerConstant intConst = new IntegerConstant(lexical.intValue);
+//                intConst.compile();
+                    break;
+                case "pushDouble":
+                    new RealConstant(lexical.realValue).compile();
+                    break;
+                case "pushString":
+                    System.out.println("push str " + lexical.string.toString());
+                    new StringConstant(lexical.string.toString()).compile();
+                    break;
+                case "pop":
+                    System.out.println("code gen of pop");
+                    break;
+                case "print":
+                    new Print((Descriptor) SemanticStack.pop()).compile();
+                    break;
+                case "readInteger":
+                    new ReadInteger().compile();
+                    break;
+                case "readLine":
+                    new ReadLine().compile();
+                    break;
+                case "readReal":
+                    new ReadReal().compile();
+                    break;
+                case "returnStatement":
+                    new Return((Descriptor) SemanticStack.pop()).compile();
+                    break;
+                case "pushType":
+                    SemanticStack.push(changeStringToType(lexical.currentSymbol.getToken()));
+                    break;
+                case "popAndPushArrayType":
+                    Object o = SemanticStack.pop();
+//                System.out.println(o.toString() + "     <- object top");
+                    Type type = (Type) o;
+                    Type resType = null;
+                    switch (type) {
+                        case INTEGER_NUMBER:
+                            resType = Type.INT_ARRAY;
+                            break;
+                        case REAL_NUMBER:
+                            resType = Type.DOUBLE_ARRAY;
+                            break;
+                        case STRING:
+                            resType = Type.STRING_ARRAY;
+                            break;
+                    }
+                    SemanticStack.push(resType);
+                    break;
+                case "pushIdDcl":
+                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    SemanticStack.push(lexical.currentSymbol.getToken());
+                    break;
+                case "pushId":
+                    SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
+                    break;
+                case "addDescriptor":
+                    String name = (String) SemanticStack.pop();
+                    Type t = (Type) SemanticStack.pop();
+                    if (TypeChecker.isArrayType(t)) {
+                        LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), t);
+                        lad.setRealName(name);
+                        SymbolTableStack.top().addDescriptor(name, lad);
+                    } else {
+                        if (!SymbolTableStack.top().contains(name)) {
+                            LocalVariableDescriptor lvd = new LocalVariableDescriptor(getVariableName(), t);
+                            SymbolTableStack.top().addDescriptor(name, lvd);
+                            if (t != Type.STRING) {
+                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
+                            } else {
+                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
+                            }
+                        } else {
+                            System.err.println("Variable " + name + " is defined before");
+                        }
+                    }
+                    break;
+                case "cast":
+                    Descriptor des = (Descriptor) SemanticStack.pop();
+                    Type type1 = (Type) SemanticStack.pop();
+                    //TODO (casting)
+                    break;
+                case "assignment":
+                    System.out.println("code gen of assignment");
+                    Descriptor rightSide = (Descriptor) SemanticStack.pop();
+                    Descriptor leftSide = (Descriptor) SemanticStack.pop();
+                    new Assignment(leftSide, rightSide).compile();
+                    break;
+                default:
+                    System.out.println("Rest");
+            }
+            System.out.println();
+        } catch (Exception e) {
+            System.err.println("Compile Error Occurred");
         }
-        System.out.println();
     }
+
 
     Type changeStringToType(String type) {
         Type res;
@@ -342,7 +385,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                 res = Type.STRING;
                 break;
             case "bool":
-                res = Type.BOOLEAN;
+                res = Type.INTEGER_NUMBER;
                 break;
             default:
                 res = null;
