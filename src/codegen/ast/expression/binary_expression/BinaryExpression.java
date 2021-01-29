@@ -27,35 +27,35 @@ public abstract class BinaryExpression extends Expression {
         this.operation = operation;
     }
 
-    private String loadAndOperate(Descriptor firstOperandDes, Descriptor secondOperandDes, String operationCommand, String storeCommand, String loadCommand) {
+    private String loadAndOperate(Descriptor firstOperandDes, Descriptor secondOperandDes, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
         String variableName = CodeGenerator.getVariableName();
         AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
         AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
         AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
-        AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
-        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "$t1");
+        AssemblyFileWriter.appendCommandToCode(loadCommand, variableName0, "0($t0)");
+        AssemblyFileWriter.appendCommandToCode(loadCommand, variableName1, "0($t1)");
+        AssemblyFileWriter.appendCommandToCode(operationCommand, variableName0, variableName0, variableName1);
         return variableName;
     }
 
-    private void generate2OperandCommands(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand) {
-        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand);
+    private void generate2OperandCommands(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand, variableName0, variableName1);
 
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
-        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
+        AssemblyFileWriter.appendCommandToCode(storeCommand, variableName0, variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
 
-    private void multiply(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand) {
-        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand);
+    private void multiply(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand, variableName0, variableName1);
         
         AssemblyFileWriter.appendCommandToCode("mfhi", "$t1");
         AssemblyFileWriter.appendCommandToCode("mflo", "$t0");
         // mfhi $a2
         // mflo $v0
         AssemblyFileWriter.appendCommandToData(variableName, "space", "64");
-        AssemblyFileWriter.appendCommandToCode("sd", "$t0", variableName);
+        AssemblyFileWriter.appendCommandToCode(storeCommand, variableName0, variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
         /*
@@ -67,8 +67,8 @@ public abstract class BinaryExpression extends Expression {
          */
     }
     
-    private void divide(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand) {
-        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand);
+    private void divide(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
+        String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand, variableName0, variableName1);
         
         AssemblyFileWriter.appendCommandToCode("mfhi", "$t1");
         AssemblyFileWriter.appendCommandToCode("mflo", "$t0");
@@ -77,7 +77,7 @@ public abstract class BinaryExpression extends Expression {
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
 
         // Important: sd is changed to sw (check if its okay)
-        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
+        AssemblyFileWriter.appendCommandToCode(storeCommand, variableName0, variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
         /*
@@ -144,12 +144,12 @@ public abstract class BinaryExpression extends Expression {
         String variableName = CodeGenerator.getVariableName();
         AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName());
         AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+//        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
         // lw for int, l.s for single
         AssemblyFileWriter.appendCommandToCode(loadCommand, "$t0", "0($t0)");
         // AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
 
-        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t1");
+        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0");
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
         // sw for int, s.s for single
 
@@ -170,6 +170,7 @@ public abstract class BinaryExpression extends Expression {
         Type resultType = firstOperandDes.getType();
         String operationCommand;
         String storeCommand = "sw", loadCommand = "lw";
+        String variableName0 = "$f0", variableName1 = "$f1";
 
         String extention = null;
 
@@ -178,11 +179,15 @@ public abstract class BinaryExpression extends Expression {
                 extention = "";
                 storeCommand = "sw";
                 loadCommand = "lw";
+                variableName0 = "$t0";
+                variableName1 = "$t1";
                 break;
             case REAL_NUMBER:
                 extention = ".s";
                 storeCommand = "s.s";
                 loadCommand = "l.s";
+                variableName0 = "$f0";
+                variableName1 = "$f1";
                 break;
             case STRING:
                 // extention = "";
@@ -197,26 +202,26 @@ public abstract class BinaryExpression extends Expression {
         switch (operation) {
         // Arithmatic
             case "+":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "add"+ extention, storeCommand, loadCommand);
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "add"+ extention, storeCommand, loadCommand, variableName0, variableName1);
+                //generateAddFloat(firstOperandDes, secondOperandDes, resultType, "add"+ extention, storeCommand, loadCommand);
                 // operationCommand = "add";
                 break;
             case "-":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sub"+ extention, storeCommand, loadCommand);
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sub"+ extention, storeCommand, loadCommand, variableName0, variableName1);
                 // operationCommand = "sub";
                 break;
             case "/":
                 //TODO: division by 0
-                divide(firstOperandDes, secondOperandDes, resultType, "div"+ extention, storeCommand, loadCommand);
+                divide(firstOperandDes, secondOperandDes, resultType, "div"+ extention, storeCommand, loadCommand, variableName0, variableName1);
                 // operationCommand = "div";
                 break;
             case "*":
-                multiply(firstOperandDes, secondOperandDes, resultType, "mul"+ extention, storeCommand, loadCommand);
+                multiply(firstOperandDes, secondOperandDes, resultType, "mul"+ extention, resultType==Type.INTEGER_NUMBER ? "sd" : "s.s", loadCommand, variableName0, variableName1);
                 // operationCommand = "mul";
                 break;
             case "%":
-                //TODO: Check if both are int
                 if(firstOperandDes.getType() == Type.INTEGER_NUMBER && secondOperandDes.getType() == Type.INTEGER_NUMBER ) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else
                     throw new TypeError("%", firstOperandDes.getType(), firstOperandDes.getType());
@@ -224,61 +229,61 @@ public abstract class BinaryExpression extends Expression {
         // and, or, xor
             case "&&":
             case "&":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "and", "sw", "lw");
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "and", "sw", "lw", variableName0, variableName1);
                 break;
             case "||":
             case "|":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "or", "sw", "lw");
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "or", "sw", "lw", variableName0, variableName1);
                 break;
             case "^":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "xor", "sw", "lw");
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "xor", "sw", "lw", variableName0, variableName1);
                 break;
             case "~":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "nor", "sw", "lw");
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "nor", "sw", "lw", variableName0, variableName1);
                 break;
         // Comparison
             case "==":
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){     //TODO (for all). better: firstOperandDes.getType() == secondOperandDes.getType() == Type.REAL_NUMBER
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.eq.s", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.eq.s", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else if(firstOperandDes.getType() == Type.INTEGER_NUMBER) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "seq", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "seq", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 break;
             case "<":
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.lt.s", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.lt.s", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else if(firstOperandDes.getType() == Type.INTEGER_NUMBER) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "slt", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "slt", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 break;
             case ">=":
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){
-                    generate2OperandCommands(secondOperandDes, firstOperandDes, resultType, "c.le.s", storeCommand, loadCommand);
+                    generate2OperandCommands(secondOperandDes, firstOperandDes, resultType, "c.le.s", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else if(firstOperandDes.getType() == Type.INTEGER_NUMBER) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sge", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sge", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 break;
             case ">":
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){
-                    generate2OperandCommands(secondOperandDes, firstOperandDes, resultType, "c.lt.s", storeCommand, loadCommand);
+                    generate2OperandCommands(secondOperandDes, firstOperandDes, resultType, "c.lt.s", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else if(firstOperandDes.getType() == Type.INTEGER_NUMBER) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sgt", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sgt", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 break;
             case "<=":
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.le.s", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.le.s", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 else if(firstOperandDes.getType() == Type.INTEGER_NUMBER) {
-                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sle", storeCommand, loadCommand);
+                    generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sle", storeCommand, loadCommand, variableName0, variableName1);
                 }
                 break;
             case "!=":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sne", "sw", "lw");
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sne", "sw", "lw", variableName0, variableName1);
                 break;
             // Unary
             case "++":
@@ -310,5 +315,19 @@ public abstract class BinaryExpression extends Expression {
                 operationCommand = null;
                 resultType = null;
         }
+    }
+
+    private void generateAddFloat(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand) {
+        String variableName = CodeGenerator.getVariableName();
+        AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName() + ", " + secondOperandDes.getName() );
+        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("l.s", "$f0", "0($t0)");
+        AssemblyFileWriter.appendCommandToCode("l.s", "$f1", "0($t1)");
+        AssemblyFileWriter.appendCommandToCode("add.s", "$f0", "$f0", "$f1");
+        AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
+        AssemblyFileWriter.appendCommandToCode("s.s", "$f0", variableName);
+        AssemblyFileWriter.appendDebugLine(variableName);
+        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
 }
