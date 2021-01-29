@@ -28,15 +28,19 @@ public class If extends Statement {
     public static void completeIf() {
         AssemblyFileWriter.appendComment("complete if code");
         AssemblyFileWriter.appendCommandToCode("j", afterElseLabel);
+        AssemblyFileWriter.addLabel(afterIfLabel);
+        AssemblyFileWriter.addLabel(afterElseLabel);
     }
 
     public static void elseCode() {
-        AssemblyFileWriter.addLabel(afterIfLabel);
         AssemblyFileWriter.appendComment("else code");
+        AssemblyFileWriter.deleteLabel(afterIfLabel);
+        AssemblyFileWriter.addLabel(afterIfLabel);
     }
 
     public static void completeElse() {
         AssemblyFileWriter.appendComment("complete else code");
+        AssemblyFileWriter.deleteLabel(afterElseLabel);
         AssemblyFileWriter.addLabel(afterElseLabel);
     }
 }
