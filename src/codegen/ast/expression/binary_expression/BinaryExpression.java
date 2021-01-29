@@ -10,11 +10,15 @@ import codegen.utils.DescriptorChecker;
 import codegen.utils.type.TypeChecker;
 import scanner.classes.Type;
 
+import java.util.ArrayList;
+
 public abstract class BinaryExpression extends Expression {
 
     protected Descriptor firstOperand;
     protected Descriptor secondOperand;
     protected String operation;
+
+    private ArrayList<Object> PendingProcess = new ArrayList<>();
 
     public BinaryExpression(Descriptor firstOperand, Descriptor secondOperand, String operation) {
         this.firstOperand = firstOperand;
@@ -80,6 +84,59 @@ public abstract class BinaryExpression extends Expression {
          */
     }
 
+    private void generateMinusMinusCommand(Descriptor firstOperandDes, Type resultType, String operationCommand/*, boolean isBeforeExpression*/) {
+        String variableName = CodeGenerator.getVariableName();
+        AssemblyFileWriter.appendComment("binary " + "--" + " expression of " + firstOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
+        // AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+        // AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
+
+        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "-1");
+        AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
+        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
+        AssemblyFileWriter.appendDebugLine(variableName);
+        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
+        /*if (isBeforeExpression){
+        }
+        else {
+        }*/
+    }
+
+    private void generatePlusPlusCommand(Descriptor firstOperandDes, Type resultType, String operationCommand/*, boolean isBeforeExpression*/) {
+        String variableName = CodeGenerator.getVariableName();
+        AssemblyFileWriter.appendComment("binary " + "++" + " expression of " + firstOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
+        // AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+        // AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
+
+        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0", "0x1");
+        AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
+        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
+        AssemblyFileWriter.appendDebugLine(variableName);
+        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
+        /*if (isBeforeExpression){
+        }
+        else {
+        }*/
+    }
+
+    private void generateNotCommand(Descriptor firstOperandDes, Type resultType, String operationCommand) {
+        String variableName = CodeGenerator.getVariableName();
+        AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
+        // AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+        // AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
+
+        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0");
+        AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
+        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableName);
+        AssemblyFileWriter.appendDebugLine(variableName);
+        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
+    }
+
     @Override
     public void compile() {
         System.out.println("BinaryExpr");
@@ -133,10 +190,12 @@ public abstract class BinaryExpression extends Expression {
                 // Check if both are int
                 generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem");
                 break;
-        // Comparison
+        // and, or, xor
+            case "&&":
             case "&":
                 generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "and");
                 break;
+            case "||":
             case "|":
                 generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "or");
                 break;
@@ -160,7 +219,17 @@ public abstract class BinaryExpression extends Expression {
                 generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sle");
                 break;
             case "!=":
-                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sne");
+            generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sne");
+                break;
+            // Unary
+            case "++":
+                generatePlusPlusCommand(firstOperandDes, resultType, "addi");
+                break;
+            case "--":
+                generateMinusMinusCommand(firstOperandDes, resultType, "addi");
+                break;
+            case "!":
+                generateNotCommand(firstOperandDes, resultType, "not");
                 break;
             default:
                 operationCommand = null;
