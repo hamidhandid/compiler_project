@@ -7,7 +7,7 @@ import codegen.symbol_table.dscp.Descriptor;
 public class And extends LogicalExpression {
 
     public And(Descriptor firstOperand, Descriptor secondOperand) {
-        super(firstOperand, secondOperand, "&");
+        super(firstOperand, secondOperand, "&&");
     }
 
     @Override
