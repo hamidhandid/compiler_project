@@ -10,7 +10,7 @@ import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
 import scanner.classes.Type;
 
-public class StringConstant extends ConstantExpression{
+public class StringConstant extends ConstantExpression {
     protected String stringConst;
 
     public StringConstant(String stringConst) {
@@ -19,6 +19,15 @@ public class StringConstant extends ConstantExpression{
 
     @Override
     public void compile() {
-
+        System.out.println(stringConst);
+        String variableName = CodeGenerator.getVariableName();
+        VariableDescriptor descriptor = new LocalVariableDescriptor(variableName, Type.STRING);
+        descriptor.setValue(stringConst);
+        SemanticStack.push(descriptor);
+        AssemblyFileWriter.appendComment("string constant");
+//        AssemblyFileWriter.appendCommandToCode("sw", "$f0", variableName);
+        SymbolTableStack.top().addDescriptor("$$" + stringConst, descriptor);
+        AssemblyFileWriter.appendCommandToData(variableName, "asciiz", "\"" + stringConst + "\"");
+        AssemblyFileWriter.appendDebugLine(variableName);
     }
 }

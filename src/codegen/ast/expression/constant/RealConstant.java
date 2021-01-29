@@ -13,7 +13,7 @@ import scanner.classes.Type;
 public class RealConstant extends ConstantExpression{
     protected float realConst;
 
-    public RealConstant(float intConst) {
+    public RealConstant(float realConst) {
         this.realConst = realConst;
     }
 
@@ -21,14 +21,14 @@ public class RealConstant extends ConstantExpression{
     public void compile() {
         System.out.println(realConst);
         String variableName = CodeGenerator.getVariableName();
-        VariableDescriptor descriptor = new LocalVariableDescriptor(variableName, Type.INTEGER_NUMBER);
+        VariableDescriptor descriptor = new LocalVariableDescriptor(variableName, Type.REAL_NUMBER);
         descriptor.setValue(String.valueOf(realConst));
-        SemanticStack.push(descriptor);
         AssemblyFileWriter.appendComment("integer constant");
         AssemblyFileWriter.appendCommandToCode("li.s", "$f0", String.valueOf(realConst));
-        AssemblyFileWriter.appendCommandToCode("sw", "$f0", variableName);
+        AssemblyFileWriter.appendCommandToCode("s.s", "$f0", variableName);
         SymbolTableStack.top().addDescriptor("$" + realConst, descriptor);
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
         AssemblyFileWriter.appendDebugLine(variableName);
+        SemanticStack.push(descriptor);
     }
 }
