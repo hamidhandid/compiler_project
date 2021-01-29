@@ -33,7 +33,7 @@ public abstract class BinaryExpression extends Expression {
         return variableName;
     }
 
-    private void addorsub(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
+    private void generate2OperandCommands(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
         String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand);
 
         AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
@@ -42,14 +42,6 @@ public abstract class BinaryExpression extends Expression {
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
 
-    private void add(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
-        addorsub(firstOperandDes, secondOperandDes, resultType, operationCommand);
-    }
-
-    private void subtract(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
-        addorsub(firstOperandDes, secondOperandDes, resultType, operationCommand);
-    }
-    
     private void multiply(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand) {
         String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand);
         
@@ -61,7 +53,6 @@ public abstract class BinaryExpression extends Expression {
         AssemblyFileWriter.appendCommandToCode("sd", "$t0", variableName);
         AssemblyFileWriter.appendDebugLine(variableName);
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
-        
         /*
             li $a0, 5
             li $a1, 3
@@ -101,8 +92,7 @@ public abstract class BinaryExpression extends Expression {
         Type resultType = firstOperandDes.getType();
         String operationCommand;
 
-        
-         String extention = null;
+        String extention = null;
 
         switch (resultType) {
             case INTEGER_NUMBER:
@@ -122,12 +112,13 @@ public abstract class BinaryExpression extends Expression {
         }
 
         switch (operation) {
+        // Arithmatic
             case "+":
-                add(firstOperandDes, secondOperandDes, resultType, "add"+ extention);
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "add"+ extention);
                 // operationCommand = "add";
                 break;
             case "-":
-                subtract(firstOperandDes, secondOperandDes, resultType, "sub"+ extention);
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sub"+ extention);
                 // operationCommand = "sub";
                 break;
             case "/":
@@ -137,6 +128,39 @@ public abstract class BinaryExpression extends Expression {
             case "*":
                 multiply(firstOperandDes, secondOperandDes, resultType, "mul"+ extention);
                 // operationCommand = "mul";
+                break;
+            case "%":
+                // Check if both are int
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "rem");
+                break;
+        // Comparison
+            case "&":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "and");
+                break;
+            case "|":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "or");
+                break;
+            case "^":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "xor");
+                break;
+        // Comparison
+            case "==":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "seq");
+                break;
+            case "<":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "slt");
+                break;
+            case ">=":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sge");
+                break;
+            case ">":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sgt");
+                break;
+            case "<=":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sle");
+                break;
+            case "!=":
+                generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "sne");
                 break;
             default:
                 operationCommand = null;
