@@ -14,7 +14,7 @@ package scanner.classes;
 %{
     public Symbol currentSymbol;
     public int intValue = 0;
-    public double doubleValue = 0.0;
+    public float realValue = 0.0f;
     public boolean booleanValue;
     public StringBuffer string  = new StringBuffer();
     private Symbol symbol(String token, Type type) {
@@ -71,10 +71,11 @@ Array = "Array"
 Print = "Print"
 ReadInteger = "ReadInteger"
 ReadLine = "ReadLine"
+ReadReal = "ReadReal"
 Continue = "continue"
 False = "false"
 True = "true"
-ReservedKeyword = {Function} | {Void} | {Int} | {Double} | {Bool} | {String} | {Record} | {For} | {While} | {If} | {Else} | {Return} | {Break} | {New} | {Array} | {Print} | {ReadInteger} | {ReadLine} | {Continue} | {False} | {True}
+ReservedKeyword = {Function} | {Void} | {Int} | {Double} | {Bool} | {String} | {Record} | {For} | {While} | {If} | {Else} | {Return} | {Break} | {New} | {Array} | {Print} | {ReadInteger} | {ReadLine} | {ReadReal} | {Continue} | {False} | {True}
 
 // Operators and Punctuations
 Add = "+"
@@ -128,15 +129,16 @@ StringLiteral = \"
 
 <YYINITIAL> {
     {StringLiteral} {
-        yybegin(STRING);
-        return symbol(yytext(), Type.STRING);
+         yybegin(STRING);
+         return symbol(string.toString(), Type.STRING);
     }
     {Comment} {
         return symbol(yytext(), Type.COMMENT);
     }
     {Boolean} {
         booleanValue = Boolean.valueOf(yytext());
-        return symbol(yytext(), Type.BOOLEAN);
+        intValue = booleanValue ? 1 : 0;
+        return symbol(yytext(), Type.INTEGER_NUMBER);
     }
     {ReservedKeyword} {
         return symbol(yytext(), Type.RESERVED_KEYWORD);
@@ -152,7 +154,7 @@ StringLiteral = \"
         return symbol(yytext(), Type.INTEGER_NUMBER);
     }
     {RealNumber} {
-        doubleValue = Double.valueOf(yytext());
+        realValue = Float.valueOf(yytext() + "f");
         return symbol(yytext(), Type.REAL_NUMBER);
     }
     {HexaDecimal} {
@@ -163,7 +165,7 @@ StringLiteral = \"
         return symbol(yytext(), Type.HEX);
     }
     {ScientificNotation} {
-        doubleValue = Double.valueOf(yytext());
+        realValue = Float.valueOf(yytext() + "f");
         return symbol(yytext(), Type.SCIENTIFIC_NOTATION);
     }
     {WhiteSpace} {
@@ -180,8 +182,9 @@ StringLiteral = \"
                         yybegin(YYINITIAL);
                         string.append(yytext());
                         String value = string.toString();
-                        string.setLength(0);
-                        return symbol(yytext(), Type.STRING);
+                        System.out.println(value);
+                        string = new StringBuffer();
+                        return symbol(value, Type.STRING);
                     }
     [^\r\n\t\"\'\\]+  {string.append(yytext()); return symbol(yytext(), Type.STRING);}
     "\\r"   {string.append("\r"); return symbol(yytext(), Type.ESCAPE_CHAR);}

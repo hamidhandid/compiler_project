@@ -1,14 +1,21 @@
 function void main() {
-    int a;
-    int b;
-    a = 2;
-    b = 6;
-    if (4 < 5) {
+    // int a;
+    // int b;
+    string c;
+    double d;
+    // a = 2;
+    // b = 6;
+    if (false) {
     	Print(1);
     }
-    for (a = 9; a < 10; a = a + 1) {
-        Print(67);
-    }
-    Print(69);
+    // if (true) Print("salam");
+    // for (a = 9; a < 10; a = a + 1) {
+    //     Print(67);
+    // }
+    // c = "hamidagha";
+    // Print(69);
+    // Print(c);
+    d = ReadReal();
+    Print(d);
     return 0;
 }

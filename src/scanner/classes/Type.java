@@ -5,7 +5,6 @@ public enum Type {
     IDENTIFIER,
     INTEGER_NUMBER,
     REAL_NUMBER,
-    BOOLEAN,
     HEX,
     SCIENTIFIC_NOTATION,
     STRING,
@@ -15,7 +14,6 @@ public enum Type {
     WHITESPACE,
     UNDEFINED,
     INT_ARRAY,
-    BOOL_ARRAY,
     STRING_ARRAY,
     DOUBLE_ARRAY
 }

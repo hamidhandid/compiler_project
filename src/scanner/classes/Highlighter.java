@@ -49,7 +49,6 @@ public class Highlighter {
         String color = "color:";
         String font = "font-weight:";
         switch (type) {
-            case BOOLEAN:
             case RESERVED_KEYWORD:
                 color += "blue";
                 font += "bold";
