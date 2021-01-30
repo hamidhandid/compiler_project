@@ -45,7 +45,7 @@ import scanner.classes.Type;
 import java.util.ArrayList;
 
 public class CodeGenerator implements parser.CodeGenerator {
-    private static CompilerScanner lexical;
+    public static CompilerScanner lexical;
     private static int variableIndex = 0;
     private static int labelIndex = 0;
 
