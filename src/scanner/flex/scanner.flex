@@ -79,6 +79,7 @@ True = "true"
 ReservedKeyword = {Function} | {Void} | {Int} | {Double} | {Bool} | {String} | {Record} | {For} | {While} | {If} | {Else} | {Return} | {Break} | {New} | {Array} | {Print} | {ReadInteger} | {ReadLine} | {ReadReal} | {Continue} | {False} | {True}
 
 // Operators and Punctuations
+Len = "Len"
 Add = "+"
 Unaryminus = "-"
 Production = "*"
@@ -118,7 +119,7 @@ OpeningParenthesis = "("
 ClosingParenthesis = ")"
 OpeningCurlyBraces = "{"
 ClosingCurlyBraces = "}"
-OperatorAndPunctuation = {AndAssignment} | {OrAssignment} |  {Percent} | {Add} | {Unaryminus} | {Production} | {Division} | {AdditionAssignment} | {SubtractionAssignment} | {ProductionAssignment} | {DivisionAssignment} | {Increment} | {Decrement} | {Less} | {LessEqual} | {Greater} | {GreaterEqual} | {NotEqual} | {Equal} | {Assignment} | {Mod} | {LogicalAnd} | {LogicalOr} | {LogicalNor} | {BitwiseAnd} | {BitwiseOr} | {StringLiteral} | {BitwiseXor} | {Not} | {Dot} | {Comma} | {Colon} | {Semicolon} | {OpeningBraces} | {ClosingBraces} | {OpeningParenthesis} | {ClosingParenthesis} | {OpeningCurlyBraces} | {ClosingCurlyBraces}
+OperatorAndPunctuation = {Len} | {AndAssignment} | {OrAssignment} |  {Percent} | {Add} | {Unaryminus} | {Production} | {Division} | {AdditionAssignment} | {SubtractionAssignment} | {ProductionAssignment} | {DivisionAssignment} | {Increment} | {Decrement} | {Less} | {LessEqual} | {Greater} | {GreaterEqual} | {NotEqual} | {Equal} | {Assignment} | {Mod} | {LogicalAnd} | {LogicalOr} | {LogicalNor} | {BitwiseAnd} | {BitwiseOr} | {StringLiteral} | {BitwiseXor} | {Not} | {Dot} | {Comma} | {Colon} | {Semicolon} | {OpeningBraces} | {ClosingBraces} | {OpeningParenthesis} | {ClosingParenthesis} | {OpeningCurlyBraces} | {ClosingCurlyBraces}
 
 // Boolean
 Boolean = {True} | {False}

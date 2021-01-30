@@ -51,9 +51,9 @@ function int main() {
     // x = 4;
     // a &= 14 ; // 01110
     // Print(a);
-    // int [] arr;
+    int [] arr;
     // int x;
-    // arr = New Array(20, int);
+    arr = New Array(20, int);
     // arr[2] = 6;
     // arr[3] = arr[2];
     // x = arr[3];
@@ -62,6 +62,6 @@ function int main() {
     // name.b = 3;
     // // Print(x + arr[3]);
     x = 6;
-    Print(x);
+    Print(Len(arr));
     return 0;
 }

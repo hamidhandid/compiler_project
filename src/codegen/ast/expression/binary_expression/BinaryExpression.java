@@ -49,7 +49,7 @@ public abstract class BinaryExpression extends Expression {
 
     private void multiply(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
         String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand, variableName0, variableName1);
-        
+
         AssemblyFileWriter.appendCommandToCode("mfhi", "$t1");
         AssemblyFileWriter.appendCommandToCode("mflo", "$t0");
         AssemblyFileWriter.appendCommandToData(variableName, "space", "64");
@@ -57,7 +57,11 @@ public abstract class BinaryExpression extends Expression {
         AssemblyFileWriter.appendDebugLine(variableName);
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
-    
+
+    public static String continueLabel;
+    public static String afterCompareLabel;
+    public static String variableNameOfContinue;
+
     private void divide(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand, String variableName0, String variableName1) {
         String variableName = loadAndOperate(firstOperandDes, secondOperandDes, operationCommand, storeCommand, loadCommand, variableName0, variableName1);
         
@@ -102,6 +106,24 @@ public abstract class BinaryExpression extends Expression {
         }
         else {
         }*/
+    }
+
+    private void generateCompare(Descriptor firstOperandDes, Descriptor secondOperandDes) {
+        variableNameOfContinue = CodeGenerator.getVariableName();
+        continueLabel = CodeGenerator.generateNewLabel();
+        afterCompareLabel = CodeGenerator.generateNewLabel();
+        AssemblyFileWriter.appendComment("compare of real");
+        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
+        AssemblyFileWriter.appendCommandToCode("l.s", "$f0", "0($t0)");
+        AssemblyFileWriter.appendCommandToCode("l.s", "$f1", "0($t1)");
+        AssemblyFileWriter.appendCommandToCode("c.eq.s", "$f0", "$f1");
+        AssemblyFileWriter.appendCommandToCode("bc1t", afterCompareLabel);
+        AssemblyFileWriter.appendCommandToCode("li", "$t0", "0");
+        AssemblyFileWriter.appendCommandToCode("sw", "$t0", variableNameOfContinue);
+        AssemblyFileWriter.addLabel(continueLabel);
+//        AssemblyFileWriter.appendDebugLine(variableNameOfContinue);
+        SemanticStack.push(new LocalVariableDescriptor(variableNameOfContinue, Type.INTEGER_NUMBER));
     }
 
     private void generateNotCommand(Descriptor firstOperandDes, Type resultType, String operationCommand) {
@@ -202,6 +224,7 @@ public abstract class BinaryExpression extends Expression {
                 break;
             // Comparison
             case "==":
+//                generateCompare(firstOperand, secondOperand);
                 if (firstOperandDes.getType() == Type.REAL_NUMBER){     //TODO (for all). better: firstOperandDes.getType() == secondOperandDes.getType() == Type.REAL_NUMBER
                     generate2OperandCommands(firstOperandDes, secondOperandDes, resultType, "c.eq.s", storeCommand, loadCommand, variableName0, variableName1);
                 }

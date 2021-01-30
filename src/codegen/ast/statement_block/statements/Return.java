@@ -1,5 +1,6 @@
 package codegen.ast.statement_block.statements;
 
+import codegen.ast.expression.binary_expression.BinaryExpression;
 import codegen.ast.statement_block.Statement;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.utils.AssemblyFileWriter;
@@ -14,6 +15,10 @@ public class Return extends Statement {
 
     @Override
     public void compile() {
+        AssemblyFileWriter.addLabel(BinaryExpression.afterCompareLabel);
+        AssemblyFileWriter.appendCommandToCode("li", "$t0", "1");
+        AssemblyFileWriter.appendCommandToCode("sw", "$t0", BinaryExpression.variableNameOfContinue);
+        AssemblyFileWriter.appendCommandToCode("b", BinaryExpression.continueLabel);
         AssemblyFileWriter.appendComment("return " + value.getName());
         AssemblyFileWriter.appendCommandToCode("li", "$v0", "10");
         AssemblyFileWriter.appendCommandToCode("la", "$t0", value.getName());

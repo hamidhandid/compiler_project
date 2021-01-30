@@ -638,6 +638,16 @@ public class CodeGenerator implements parser.CodeGenerator {
                         e.printStackTrace();
                     }
                     break;
+                case "getLen":
+                    ArrayDescriptor descriptor;
+                    try {
+                        descriptor = (ArrayDescriptor) SemanticStack.pop();
+                        IntegerConstant integerConstant = new IntegerConstant(descriptor.getSize());
+                        integerConstant.compile();
+                    } catch (Exception e) {
+                        System.err.println("len is called in type that is not array");
+                    }
+                    break;
                 default:
                     System.out.println("");
             }
