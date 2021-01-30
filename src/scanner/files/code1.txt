@@ -1,67 +1,44 @@
 int x;
 function int main() {
-    // int a;
-    // int b;
-    // int g;
-    // double d;
-    // double c;
-    // double f;
-    // b = 5;
-    // a = 7;
-    // d = 2.5;
-    // c = 1.5;
-    // Print(a);
-    // Print(b);
-    // Print(d);
-    // Print(c);
-    // f = d + c;
-    // Print(f);
-    // f = d - c;
-    // Print(f);
-    // f = d * c;
-    // Print(f);
-    // f = d / c;
-    // Print(f);
-    // g = a + b;
-    // Print(g);
-    // g = a - b;
-    // Print(g);
-    // g = a * b;
-    // Print(g);
-    // g = a / b;
-    // Print(g);
-    // g = a % b;
-    // Print(g);
-    // g = a && b;
-    // Print(g);
-    // g = a || b;
-    // Print(g);
-    // int g;
-    // g = 5 ^ 7;
-    // Print(g);
-    // g = 5 ~ 7; // 101 111
-    // Print(g);
-    // Print(0x110);
-    // int a;
-    // a = 26; //  11010
-    // while (a < 6) {
-    //     a = a + 1;
-    //     Print(a);
+    //int i;
+    //int j;
+    //int x;
+    //int[] rawitems;
+    //int[] items;
+    //int t;
+//
+    //rawitems = New Array(5, int);
+    //for (i = 0; i < 5; i = i + 1) {
+    //    x = ReadInteger();
+    //    // if (x == -1) break;
+    //    rawitems[i] = x;
+    //}
+//
+    //items = New Array(5, int);
+    //for (j = 0; j < i; j = j + 1) {
+    //    items[j] = rawitems[j];
+    //}
+    ////sort(items);
+    //n = Len(items);
+    //for (i = 0; i < n - 1; i = i + 1) {
+    //        for (j = 0; j < n - i - 1; j = j + 1) {
+    //            if (items[j] > items[j + 1]) {
+    //                t = items[j];
+    //                items[j] = items[j + 1];
+    //                items[j + 1] = t;
+    //            }
+    //        }
+    //    }
+    ////Print("After sort: ");
+    int i;
+    string a;
+    double d;
+    // string b;
+    x = 5;
+    // for (i = 0; i < 2; i = i + 1) {
+    //     d = 2.6;
+    //     Print(d);
     // }
-    // x = 4;
-    // a &= 14 ; // 01110
-    // Print(a);
-    int [] arr;
-    // int x;
-    arr = New Array(20, int);
-    // arr[2] = 6;
-    // arr[3] = arr[2];
-    // x = arr[3];
-    // record r1 name;
-    // name.a = 2;
-    // name.b = 3;
-    // // Print(x + arr[3]);
-    x = 6;
-    Print(Len(arr));
+    Print(x);
     return 0;
 }

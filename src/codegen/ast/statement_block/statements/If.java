@@ -14,7 +14,6 @@ public class If extends Statement {
         this.value = value;
     }
 
-    //TODO (Handle complete if and complete else with replacing the code string)
     @Override
     public void compile() {
         afterIfLabel = CodeGenerator.generateNewLabel();
