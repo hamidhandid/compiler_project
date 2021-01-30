@@ -36,6 +36,8 @@ import codegen.symbol_table.stacks.SemanticStack;
 import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
 import codegen.utils.DescriptorChecker;
+import codegen.utils.errors.CastError;
+import codegen.utils.errors.TypeError;
 import codegen.utils.type.TypeChecker;
 import scanner.classes.CompilerScanner;
 import scanner.classes.Type;
@@ -332,15 +334,8 @@ public class CodeGenerator implements parser.CodeGenerator {
                     break;
                 case "pushInteger":
                     System.out.println("code gen of push integer");
-                    //TODO (Check if constant is in symbol table)
                     IntegerConstant intConst = new IntegerConstant(lexical.intValue);
                     intConst.compile();
-                    break;
-                case "pushBool":
-//                System.out.println("code gen of push integer");
-//                //TODO (Check if constant is in symbol table)
-//                IntegerConstant intConst = new IntegerConstant(lexical.intValue);
-//                intConst.compile();
                     break;
                 case "pushDouble":
                     new RealConstant(lexical.realValue).compile();
@@ -483,7 +478,9 @@ public class CodeGenerator implements parser.CodeGenerator {
                     } else if (type == Type.REAL_NUMBER) {
                         new IntToDouble(des, type).compile();
                     } else {
-                        //TODO (generator type Exception)
+                        String srcType = des.getType().toString();
+                        String destType = type.toString();
+                        new CastError(srcType, destType).error();
                     }
                     break;
                 case "addAssign":
@@ -550,7 +547,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                     if (Records.contains(lexical.currentSymbol.getToken())) {
                         SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        //TODO (do not have record with this name)
+                        Records.noRecordWithThisName(lexical.currentSymbol.getToken());
                     }
                     break;
                 case "recordVarAndPush":
@@ -570,7 +567,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                         AssemblyFileWriter.appendCommandToCode("sw", "$t0", newAdr);
                         SemanticStack.push(new LocalVariableDescriptor(newAdr, Type.INTEGER_NUMBER));
                     } catch (Exception e) {
-                        //TODO (do not have record with this name)
+                        Records.noRecordWithThisName(str);
                     }
                     break;
                 case "popRecord":
@@ -595,7 +592,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                             AssemblyFileWriter.appendCommandToCode("add", "$t2", "$t2", "$t1");
                             AssemblyFileWriter.appendCommandToCode("sw", "$t0", "0($t2)");
                         } else {
-                            //TODO (do not have record with this name)
+                            Records.noRecordWithThisName(recName);
                         }
                     } catch (Exception e) {
                         System.err.println("Compile Error Occurred");
@@ -607,7 +604,7 @@ public class CodeGenerator implements parser.CodeGenerator {
             System.out.println();
         } catch (Exception e) {
             System.err.println("Compile Error Occurred");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
