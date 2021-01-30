@@ -1,21 +1,46 @@
 function void main() {
-    // int a;
-    // int b;
-    string c;
+    int a;
+    int b;
+    int g;
     double d;
-    // a = 2;
-    // b = 6;
-    if (false) {
-    	Print(1);
-    }
-    // if (true) Print("salam");
-    // for (a = 9; a < 10; a = a + 1) {
-    //     Print(67);
-    // }
-    // c = "hamidagha";
-    // Print(69);
-    // Print(c);
-    d = ReadReal();
+    double c;
+    double f;
+    b = 5;
+    a = 7;
+    d = 2.5;
+    c = 1.5;
+    Print(a);
+    Print(b);
     Print(d);
+    Print(c);
+    f = d + c;
+    Print(f);
+    f = d - c;
+    Print(f);
+    f = d * c;
+    Print(f);
+    f = d / c;
+    Print(f);
+
+    g = a + b;
+    Print(g);
+    g = a - b;
+    Print(g);
+    g = a * b;
+    Print(g);
+    g = a / b;
+    Print(g);
+    g = a % b;
+    Print(g);
+    g = a && b;
+    Print(g);
+    g = a || b;
+    Print(g);
+    g = 5 ^ 7;
+    Print(g);
+    g = 5 ~ 7; // 101 111
+    Print(g);
+    Print(0x110);
+
     return 0;
 }

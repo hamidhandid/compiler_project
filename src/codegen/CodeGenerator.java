@@ -2,6 +2,8 @@ package codegen;
 
 import codegen.ast.declaration.variable_declaration.LocalVariableDeclaration;
 import codegen.ast.expression.binary_expression.arithmetic.*;
+import codegen.ast.expression.binary_expression.cast.DoubleToInt;
+import codegen.ast.expression.binary_expression.cast.IntToDouble;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.*;
 /*import codegen.ast.expression.binary_expression.logical.logical_expressions.Not;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
@@ -12,6 +14,8 @@ import codegen.ast.expression.constant.StringConstant;
 import codegen.ast.expression.input.ReadInteger;
 import codegen.ast.expression.input.ReadLine;
 import codegen.ast.expression.input.ReadReal;
+import codegen.ast.expression.unary_expression.arithmetic.MinusMinus;
+import codegen.ast.expression.unary_expression.arithmetic.PlusPlus;
 import codegen.ast.statement_block.statements.If;
 import codegen.ast.statement_block.statements.Print;
 import codegen.ast.statement_block.statements.Assignment;
@@ -108,18 +112,26 @@ public class CodeGenerator implements parser.CodeGenerator {
                     new Divide(firstOperand, secondOperand).compile();
                     System.out.println("code gen of division");
                     break;
-                case "reminder":
+                case "remainder":
                     secondOperand = (Descriptor) SemanticStack.pop();
                     firstOperand = (Descriptor) SemanticStack.pop();
                     new Remainder(firstOperand, secondOperand).compile();
                     System.out.println("code gen of remainder");
                     break;
+                case "nor":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new Nor(firstOperand, secondOperand).compile();
+                    System.out.println("code gen of nor");
+                    break;
+                case "and":
                 case "logicalAnd":
                     secondOperand = (Descriptor) SemanticStack.pop();
                     firstOperand = (Descriptor) SemanticStack.pop();
                     new And(firstOperand, secondOperand).compile();
                     System.out.println("code gen of and");
                     break;
+                case "or":
                 case "logicalOr":
                     secondOperand = (Descriptor) SemanticStack.pop();
                     firstOperand = (Descriptor) SemanticStack.pop();
@@ -136,6 +148,16 @@ public class CodeGenerator implements parser.CodeGenerator {
                     firstOperand = (Descriptor) SemanticStack.pop();
                     new Not(firstOperand).compile();
                     System.out.println("code gen of not");
+                    break;
+                case "minusMinus":
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new MinusMinus(firstOperand).compile();
+                    System.out.println("code gen of minus minus");
+                    break;
+                case "plusPlus":
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    new PlusPlus(firstOperand).compile();
+                    System.out.println("code gen of plus plus");
                     break;
                 case "biggerThan":
                     secondOperand = (Descriptor) SemanticStack.pop();
@@ -392,7 +414,13 @@ public class CodeGenerator implements parser.CodeGenerator {
                 case "cast":
                     des = (Descriptor) SemanticStack.pop();
                     type = (Type) SemanticStack.pop();
-                    //TODO (casting)
+                    if (type == Type.INTEGER_NUMBER) {
+                        new DoubleToInt(des, type).compile();
+                    } else if (type == Type.REAL_NUMBER) {
+                        new IntToDouble(des, type).compile();
+                    } else {
+                        //TODO (generator type Exception)
+                    }
                     break;
                 case "assignment":
                     System.out.println("code gen of assignment");
@@ -417,6 +445,7 @@ public class CodeGenerator implements parser.CodeGenerator {
             System.out.println();
         } catch (Exception e) {
             System.err.println("Compile Error Occurred");
+            e.printStackTrace();
         }
     }
 

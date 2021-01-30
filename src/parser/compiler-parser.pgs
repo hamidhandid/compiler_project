@@ -836,7 +836,7 @@
         "start": 42,
         "end": 41,
         "token": "EXPR",
-        "func": "biggetThan",
+        "func": "biggerThan",
         "anchorX": 622.0,
         "anchorY": 384.0,
         "isGraph": true,

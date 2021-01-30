@@ -140,24 +140,6 @@ public abstract class BinaryExpression extends Expression {
         SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
     }
 
-    private void convert(Descriptor firstOperandDes, Descriptor secondOperandDes, Type resultType, String operationCommand, String storeCommand, String loadCommand) {
-        String variableName = CodeGenerator.getVariableName();
-        AssemblyFileWriter.appendComment("binary " + operationCommand + " expression of " + firstOperandDes.getName());
-        AssemblyFileWriter.appendCommandToCode("la", "$t0", firstOperandDes.getName());
-//        AssemblyFileWriter.appendCommandToCode("la", "$t1", secondOperandDes.getName());
-        // lw for int, l.s for single
-        AssemblyFileWriter.appendCommandToCode(loadCommand, "$t0", "0($t0)");
-        // AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
-
-        AssemblyFileWriter.appendCommandToCode(operationCommand, "$t0", "$t0");
-        AssemblyFileWriter.appendCommandToData(variableName, "word", "0");
-        // sw for int, s.s for single
-
-        AssemblyFileWriter.appendCommandToCode(storeCommand, "$t0", variableName);
-        AssemblyFileWriter.appendDebugLine(variableName);
-        SemanticStack.push(new LocalVariableDescriptor(variableName, resultType));
-    }
-
     @Override
     public void compile() {
         System.out.println("BinaryExpr");
@@ -305,12 +287,6 @@ public abstract class BinaryExpression extends Expression {
                 generateNotCommand(firstOperandDes, resultType, "not");
                 break;
             // Convert Singe to Integer and vise-versa
-            case "s2i":
-                convert(firstOperandDes, secondOperandDes, resultType, "cvt.s.w", "sw", "l.s");
-                break;
-            case "i2s":
-                convert(firstOperandDes, secondOperandDes, resultType, "cvt.w.s", "s.s", "lw");
-                break;
             default:
                 operationCommand = null;
                 resultType = null;
