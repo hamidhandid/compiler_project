@@ -1,4 +1,5 @@
 package codegen.utils.errors;
+import codegen.CodeGenerator;
 import scanner.classes.Type;
 
 public class TypeError extends RuntimeException {
@@ -11,7 +12,7 @@ public class TypeError extends RuntimeException {
     }
 
     public TypeError(String operation, Type... Types) {
-        super("TypeError: unsupported operand type(s) for" + operation + ": " + stringifyMultipleType(Types));
+        super("TypeError: unsupported operand type(s) for" + operation + ": " + stringifyMultipleType(Types) + " at line " + CodeGenerator.lexical.getLine());
     }
 
     /*public TypeError(String operation, Type firstType, Type secondType) {

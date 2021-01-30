@@ -1,5 +1,7 @@
 package codegen.utils.errors;
 
+import codegen.CodeGenerator;
+
 public class CastError extends RuntimeException{
     String srcType;
     String destType;
@@ -11,6 +13,6 @@ public class CastError extends RuntimeException{
 
 
     public void error() {
-        System.err.println("Can not cast " + srcType + " to " + destType);
+        System.err.println("Can not cast " + srcType + " to " + destType + " at line" + CodeGenerator.lexical.getLine());
     }
 }
