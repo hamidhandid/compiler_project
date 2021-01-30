@@ -71,6 +71,8 @@ public class CodeGenerator implements parser.CodeGenerator {
 
     VariableDescriptor index = null;
     Descriptor arrName = null;
+    String str = null;
+    String str2 = null;
 
     @Override
     public void doSemantic(String sem) {
@@ -484,27 +486,50 @@ public class CodeGenerator implements parser.CodeGenerator {
                         //TODO (generator type Exception)
                     }
                     break;
+                case "addAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new Add(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
+                case "subAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new Subtract(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
+                case "multAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new Multiply(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
+                case "divAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new Divide(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
+                case "andAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new And(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
+                case "orAssign":
+                    secondOperand = (Descriptor) SemanticStack.pop();
+                    firstOperand = (Descriptor) SemanticStack.pop();
+                    SemanticStack.push(firstOperand);
+                    new Or(firstOperand, secondOperand).compile();
+                    new Assignment().compile();
+                    break;
                 case "assignment":
-                    System.out.println("code gen of assignment");
-                    rightSide = (Descriptor) SemanticStack.pop();
-                    des = (Descriptor) SemanticStack.pop();
-                    System.out.println(rightSide.getType());
-                    System.out.println(des.getType());
-                    if (TypeChecker.isArrayType(des.getType())) {
-                        int index = Integer.parseInt(((VariableDescriptor) rightSide).getValue());
-                        AssemblyFileWriter.appendCommandToCode("li", "$t0", String.valueOf(index));
-                        AssemblyFileWriter.appendCommandToCode("la", "$t1", des.getName());
-                        AssemblyFileWriter.appendCommandToCode("li", "$t4", String.valueOf(4)); //TODO: convert 4 to size of
-                        AssemblyFileWriter.appendCommandToCode("mul", "$t0", "$t0", "$t4");
-                        AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t0");
-                        AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
-                        Descriptor leftSide = (Descriptor) SemanticStack.pop();
-                        AssemblyFileWriter.appendCommandToCode("sw", "$t1", leftSide.getName());
-                        AssemblyFileWriter.appendDebugLine(leftSide.getName());
-                    } else {
-                        Descriptor leftSide = (Descriptor) des;
-                        new Assignment(leftSide, rightSide).compile();
-                    }
+                    new Assignment().compile();
                     break;
                 case "recordAddName":
                     SemanticStack.push(lexical.currentSymbol.getToken());
@@ -529,12 +554,51 @@ public class CodeGenerator implements parser.CodeGenerator {
                     }
                     break;
                 case "recordVarAndPush":
-                    String recordName = (String) SemanticStack.pop();
+                    str = lexical.currentSymbol.getToken();
+                    str2 = (String) SemanticStack.pop();
                     try {
-                        Descriptor descriptor = GlobalSymbolTable.getSymbolTable().getDescriptor(recordName);
-
+                        RecordDescriptor descriptor = (RecordDescriptor) GlobalSymbolTable.getSymbolTable().getDescriptor(str);
+                        int index = descriptor.getIndex(str2);
+                        AssemblyFileWriter.appendCommandToCode("la", "$t0", descriptor.getName());
+                        AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index));
+                        AssemblyFileWriter.appendCommandToCode("li", "$t4", "4");
+                        AssemblyFileWriter.appendCommandToCode("mul", "$t1", "$t1", "$t4");
+                        AssemblyFileWriter.appendCommandToCode("add", "$t0", "$t0", "$t1");
+                        String newAdr = getVariableName();
+                        AssemblyFileWriter.appendCommandToData(newAdr, "word", "0");
+                        AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+                        AssemblyFileWriter.appendCommandToCode("sw", "$t0", newAdr);
+                        SemanticStack.push(new LocalVariableDescriptor(newAdr, Type.INTEGER_NUMBER));
                     } catch (Exception e) {
-                        //TODO (record is not defined before)
+                        //TODO (do not have record with this name)
+                    }
+                    break;
+                case "popRecord":
+                    SemanticStack.pop();
+                    SemanticStack.push(str2);
+                    SemanticStack.push(str);
+                    break;
+                case "recordAssignment":
+                    rightSide = (Descriptor) SemanticStack.pop();
+                    String recVar = (String) SemanticStack.pop();
+                    String recName = (String) SemanticStack.pop();
+                    try {
+                        if (Records.contains(recName)) {
+                            RecordDescriptor descriptor = (RecordDescriptor) GlobalSymbolTable.getSymbolTable().getDescriptor(recName);
+                            int index = descriptor.getIndex(recVar);
+                            AssemblyFileWriter.appendCommandToCode("la", "$t0", rightSide.getName());
+                            AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+                            AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index));
+                            AssemblyFileWriter.appendCommandToCode("li", "$t4", "4");
+                            AssemblyFileWriter.appendCommandToCode("mul", "$t1", "$t1", "$t4");
+                            AssemblyFileWriter.appendCommandToCode("la", "$t2", descriptor.getName());
+                            AssemblyFileWriter.appendCommandToCode("add", "$t2", "$t2", "$t1");
+                            AssemblyFileWriter.appendCommandToCode("sw", "$t0", "0($t2)");
+                        } else {
+                            //TODO (do not have record with this name)
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Compile Error Occurred");
                     }
                     break;
                 default:
