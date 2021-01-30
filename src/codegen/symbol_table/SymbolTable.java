@@ -36,6 +36,10 @@ public class SymbolTable {
         return false;
     }
 
+    public boolean isEmpty() {
+        return symbolTable.isEmpty();
+    }
+
     public void print() {
         System.out.println("symbol table = " + symbolTable.toString());
     }

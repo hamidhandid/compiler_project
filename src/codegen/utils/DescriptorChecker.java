@@ -16,12 +16,10 @@ public class DescriptorChecker {
         }
     }
 
-    public static void checkNotContainsDescriptor(String name) {
-        if (SymbolTableStack.top().contains(name)) {
-            try {
+    public static void checkNotContainsDescriptor(String name) throws Exception {
+        if (!SymbolTableStack.isEmpty()) {
+            if (SymbolTableStack.top().contains(name)) {
                 throw new Exception("Symbol table has descriptor with name " + name + " before");
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -38,11 +36,13 @@ public class DescriptorChecker {
     }
 
     public static void checkNotContainsDescriptorGlobal(String name) {
-        if (GlobalSymbolTable.getSymbolTable().contains(name)) {
-            try {
-                throw new Exception("Global Symbol table has descriptor with name " + name + " before");
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (!GlobalSymbolTable.getSymbolTable().isEmpty()) {
+            if (GlobalSymbolTable.getSymbolTable().contains(name)) {
+                try {
+                    throw new Exception("Global Symbol table has descriptor with name " + name + " before");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

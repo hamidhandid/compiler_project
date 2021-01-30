@@ -231,7 +231,11 @@ public class CodeGenerator implements parser.CodeGenerator {
                     For.completeStepOfFor();
                     break;
                 case "arrayDcl":
-                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    try {
+                        DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    } catch (Exception e) {
+                        DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
+                    }
                     Type arrType = (Type) SemanticStack.top();
                     if (!SymbolTableStack.top().contains(lexical.currentSymbol.getToken())) {
                         LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), arrType);
@@ -367,7 +371,11 @@ public class CodeGenerator implements parser.CodeGenerator {
                     SemanticStack.push(resType);
                     break;
                 case "pushIdDcl":
-                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    try {
+                        DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    } catch (Exception e) {
+                        DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
+                    }
                     SemanticStack.push(lexical.currentSymbol.getToken());
                     break;
                 case "pushIdDclGlobal":

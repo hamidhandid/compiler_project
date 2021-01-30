@@ -18,4 +18,8 @@ public class SymbolTableStack {
     public static SymbolTable top() {
         return symbolTableStack.peek();
     }
+
+    public static boolean isEmpty() {
+        return symbolTableStack.isEmpty();
+    }
 }
