@@ -20,6 +20,7 @@ import codegen.ast.statement_block.statements.Return;
 import codegen.ast.statement_block.statements.loops.For;
 import codegen.ast.statement_block.statements.loops.While;
 import codegen.symbol_table.GlobalSymbolTable;
+import codegen.symbol_table.SymbolTable;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.dscp.array.ArrayDescriptor;
 import codegen.symbol_table.dscp.array.GlobalArrayDescriptor;
@@ -233,7 +234,11 @@ public class CodeGenerator implements parser.CodeGenerator {
 //                    AssemblyFileWriter.appendCommandToData(lad.getName(), "word", "0");
                         SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        new NameError(lexical.currentSymbol.getToken(), true);
+                        try {
+                            throw new NameError(lexical.currentSymbol.getToken(), true);
+                        } catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
                     }
                     break;
                 case "arrayDclGlobal":
@@ -245,13 +250,18 @@ public class CodeGenerator implements parser.CodeGenerator {
 //                    AssemblyFileWriter.appendCommandToData(lad.getName(), "word", "0");
                         SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        new NameError(lexical.currentSymbol.getToken(), true);
+                        try {
+                            throw new NameError(lexical.currentSymbol.getToken(), true);
+                        } catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
                     }
                     break;
                 case "setArrayDescriptor":
                     Type newArrayType = (Type) SemanticStack.pop();
                     VariableDescriptor sizeDescriptor = (VariableDescriptor) SemanticStack.pop();
                     ArrayDescriptor nameOfArrayDes = (ArrayDescriptor) SemanticStack.pop();
+                    nameOfArrayDes.setSize(Integer.parseInt(sizeDescriptor.getValue()));
                     if (nameOfArrayDes.getIsLocal()) {
                         DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
                     } else {
@@ -259,6 +269,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                     }
                     TypeChecker.checkArrayType(nameOfArrayDes.getType(), newArrayType);
                     ArrayDescriptor ad = new LocalArrayDescriptor(nameOfArrayDes.getName(), newArrayType);
+                    ad.setSize(Integer.parseInt(sizeDescriptor.getValue()));
                     if (nameOfArrayDes.getIsLocal()) {
                         SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
                     } else {
@@ -393,19 +404,24 @@ public class CodeGenerator implements parser.CodeGenerator {
                     SemanticStack.push(lexical.currentSymbol.getToken());
                     break;
                 case "pushId":
-                    try {
+
+                    if (!SymbolTableStack.isEmpty() && SymbolTableStack.top().contains(lexical.currentSymbol.getToken()))
                         SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
-                    } catch (Exception e) {
+                    else {
                         try {
                             SemanticStack.push(GlobalSymbolTable.getSymbolTable().getDescriptor(lexical.currentSymbol.getToken()));
+                            System.out.println(401);
                         } catch (Exception e1) {
                             try {
                                 try {
+                                    System.out.println(407);
                                     throw new NameError(lexical.currentSymbol.getToken(), false);
                                 } catch (Exception e2) {
                                     System.err.println(e2.getMessage());
+                                    System.out.println(410);
                                 }
                             } catch (Exception e2) {
+                                System.out.println(414);
                                 System.err.println(e2.getMessage());
                             }
                         }
@@ -618,7 +634,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                             Records.noRecordWithThisName(recName);
                         }
                     } catch (Exception e) {
-                        System.err.println("Compile Error Occurred");
+                        System.err.println("Compile Error Occurred at line " + (lexical.getLine() + 1));
                         e.printStackTrace();
                     }
                     break;
@@ -627,7 +643,8 @@ public class CodeGenerator implements parser.CodeGenerator {
             }
             System.out.println();
         } catch (Exception e) {
-            System.err.println("Compile Error Occurred");
+
+            System.err.println("Compile Error Occurred at line " + (lexical.getLine() + 1));
             e.printStackTrace();
         }
     }

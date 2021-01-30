@@ -8,7 +8,7 @@ public class GlobalSymbolTable {
     }
 
     public static void print() {
-        System.out.print("Global Symbol Table = ");
+        System.out.print("global ");
         symbolTable.print();
     }
 }

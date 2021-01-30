@@ -19,7 +19,7 @@ public class Assignment extends Statement {
         rightSide = (Descriptor) SemanticStack.pop();
         Descriptor des = (Descriptor) SemanticStack.pop();
         System.out.println(rightSide.getType());
-        System.out.println(des.getType());
+       // System.out.println(des.getType());
         if (TypeChecker.isArrayType(des.getType())) {
             int index = Integer.parseInt(((VariableDescriptor) rightSide).getValue());
             AssemblyFileWriter.appendCommandToCode("li", "$t0", String.valueOf(index));
