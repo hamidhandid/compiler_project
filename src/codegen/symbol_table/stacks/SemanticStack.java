@@ -19,7 +19,6 @@ public class SemanticStack {
 
     public static void print() {
         System.out.println("semantic stack = " + semanticStack.toString());
-        System.out.println("size = " + semanticStack.size());
-        System.out.println();
+        System.out.println("size of semantic stack = " + semanticStack.size());
     }
 }

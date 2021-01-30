@@ -1,13 +1,9 @@
 package codegen;
 
-import codegen.ast.declaration.variable_declaration.LocalVariableDeclaration;
 import codegen.ast.expression.binary_expression.arithmetic.*;
 import codegen.ast.expression.binary_expression.cast.DoubleToInt;
 import codegen.ast.expression.binary_expression.cast.IntToDouble;
 import codegen.ast.expression.binary_expression.logical.logical_expressions.*;
-/*import codegen.ast.expression.binary_expression.logical.logical_expressions.Not;
-import codegen.ast.expression.binary_expression.logical.logical_expressions.Or;
-import codegen.ast.expression.binary_expression.logical.logical_expressions.SmallerThan;*/
 import codegen.ast.expression.constant.IntegerConstant;
 import codegen.ast.expression.constant.RealConstant;
 import codegen.ast.expression.constant.StringConstant;
@@ -16,6 +12,7 @@ import codegen.ast.expression.input.ReadLine;
 import codegen.ast.expression.input.ReadReal;
 import codegen.ast.expression.unary_expression.arithmetic.MinusMinus;
 import codegen.ast.expression.unary_expression.arithmetic.PlusPlus;
+import codegen.ast.expression.unary_expression.logical.Not;
 import codegen.ast.statement_block.statements.If;
 import codegen.ast.statement_block.statements.Print;
 import codegen.ast.statement_block.statements.Assignment;
@@ -38,10 +35,6 @@ import codegen.utils.type.TypeChecker;
 import scanner.classes.CompilerScanner;
 import scanner.classes.Type;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 public class CodeGenerator implements parser.CodeGenerator {
     private CompilerScanner lexical;
     private static int variableIndex = 0;
@@ -49,10 +42,6 @@ public class CodeGenerator implements parser.CodeGenerator {
 
     public CodeGenerator(CompilerScanner lexical) {
         this.lexical = lexical;
-    }
-
-    public CompilerScanner getLexical() {
-        return lexical;
     }
 
     private static int getVariableIndex() {
@@ -75,18 +64,9 @@ public class CodeGenerator implements parser.CodeGenerator {
 
     @Override
     public void doSemantic(String sem) {
-        System.out.println("sem = " + sem);
-        try {
-            System.out.println("token = " + lexical.currentSymbol.getToken() + "\n");
-            SemanticStack.print();
-            System.out.println();
-            SymbolTableStack.top().print();
-        } catch (Exception e) {
-        }
+        debugPrint(sem);
         Descriptor firstOperand, secondOperand;
         try {
-
-
             switch (sem) {
                 case "add":
                     System.out.println("code gen of add");
@@ -461,7 +441,7 @@ public class CodeGenerator implements parser.CodeGenerator {
             System.out.println();
         } catch (Exception e) {
             System.err.println("Compile Error Occurred");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -483,5 +463,15 @@ public class CodeGenerator implements parser.CodeGenerator {
                 res = null;
         }
         return res;
+    }
+
+    private void debugPrint(String sem) {
+        System.out.println("sem = " + sem);
+        try {
+            System.out.println("token = " + lexical.currentSymbol.getToken());
+            SemanticStack.print();
+            SymbolTableStack.top().print();
+        } catch (Exception e) {
+        }
     }
 }
