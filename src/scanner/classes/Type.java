@@ -15,5 +15,6 @@ public enum Type {
     UNDEFINED,
     INT_ARRAY,
     STRING_ARRAY,
-    DOUBLE_ARRAY
+    DOUBLE_ARRAY,
+    RECORD
 }

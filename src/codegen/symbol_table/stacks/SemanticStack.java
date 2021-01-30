@@ -17,6 +17,10 @@ public class SemanticStack {
         return semanticStack.peek();
     }
 
+    public static boolean isEmpty() {
+        return semanticStack.isEmpty();
+    }
+
     public static void print() {
         System.out.println("semantic stack = " + semanticStack.toString());
         System.out.println("size of semantic stack = " + semanticStack.size());

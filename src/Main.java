@@ -18,7 +18,8 @@ public class Main {
             AssemblyFileWriter writer = new AssemblyFileWriter("src/codegen/utils/");
             SymbolTableStack.push(new SymbolTable("main"));
             CompilerScanner scanner = new CompilerScanner(new FileReader("src/scanner/files/code1.txt"));
-            CodeGenerator codeGen = new CodeGenerator(scanner);
+            CodeGenerator codeGen = new CodeGenerator();
+            CodeGenerator.initCodeGenerator(scanner);
             Parser parser = new Parser(scanner, codeGen, "src/parser/table.npt");
             parser.parse();
 

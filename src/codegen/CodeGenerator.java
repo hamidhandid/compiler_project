@@ -24,9 +24,14 @@ import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.dscp.array.ArrayDescriptor;
 import codegen.symbol_table.dscp.array.GlobalArrayDescriptor;
 import codegen.symbol_table.dscp.array.LocalArrayDescriptor;
+import codegen.symbol_table.dscp.record.RecordDescriptor;
+import codegen.symbol_table.dscp.record.RecordElement;
 import codegen.symbol_table.dscp.variables.GlobalVariableDescriptor;
 import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
+import codegen.symbol_table.dscp.variables.RecordVariableDescriptor;
 import codegen.symbol_table.dscp.variables.VariableDescriptor;
+import codegen.symbol_table.stacks.records.RecordVariable;
+import codegen.symbol_table.stacks.records.Records;
 import codegen.symbol_table.stacks.SemanticStack;
 import codegen.symbol_table.stacks.SymbolTableStack;
 import codegen.utils.AssemblyFileWriter;
@@ -35,13 +40,15 @@ import codegen.utils.type.TypeChecker;
 import scanner.classes.CompilerScanner;
 import scanner.classes.Type;
 
+import java.util.ArrayList;
+
 public class CodeGenerator implements parser.CodeGenerator {
-    private CompilerScanner lexical;
+    private static CompilerScanner lexical;
     private static int variableIndex = 0;
     private static int labelIndex = 0;
 
-    public CodeGenerator(CompilerScanner lexical) {
-        this.lexical = lexical;
+    public static void initCodeGenerator(CompilerScanner scanner) {
+        lexical = scanner;
     }
 
     private static int getVariableIndex() {
@@ -61,6 +68,9 @@ public class CodeGenerator implements parser.CodeGenerator {
         ++labelIndex;
         return "lbl" + labelIndex;
     }
+
+    VariableDescriptor index = null;
+    Descriptor arrName = null;
 
     @Override
     public void doSemantic(String sem) {
@@ -211,11 +221,8 @@ public class CodeGenerator implements parser.CodeGenerator {
                     For.completeStepOfFor();
                     break;
                 case "arrayDcl":
-                    try {
-                        DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
-                    } catch (Exception e) {
-                        DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
-                    }
+                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
                     Type arrType = (Type) SemanticStack.top();
                     if (!SymbolTableStack.top().contains(lexical.currentSymbol.getToken())) {
                         LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), arrType);
@@ -240,7 +247,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                     break;
                 case "setArrayDescriptor":
                     Type newArrayType = (Type) SemanticStack.pop();
-                    LocalVariableDescriptor sizeDescriptor = (LocalVariableDescriptor) SemanticStack.pop();
+                    VariableDescriptor sizeDescriptor = (VariableDescriptor) SemanticStack.pop();
                     ArrayDescriptor nameOfArrayDes = (ArrayDescriptor) SemanticStack.pop();
                     if (nameOfArrayDes.getIsLocal()) {
                         DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
@@ -254,36 +261,65 @@ public class CodeGenerator implements parser.CodeGenerator {
                     } else {
                         GlobalSymbolTable.getSymbolTable().addDescriptor(nameOfArrayDes.getRealName(), ad);
                     }
-                    AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
+                    AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), "space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
+                    break;
+                case "arrayAccess":
+                    index = (VariableDescriptor) SemanticStack.pop();
+                    arrName = (Descriptor) SemanticStack.pop();
+                    AssemblyFileWriter.appendComment("array access with name " + arrName.getName() + " at " + index.getValue());
+                    AssemblyFileWriter.appendCommandToCode("la", "$t0", arrName.getName());
+                    AssemblyFileWriter.appendCommandToCode("li", "$t4", "4");
+                    AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index.getValue()));
+                    AssemblyFileWriter.appendCommandToCode("mul", "$t1", "$t1", "$t4");
+                    AssemblyFileWriter.appendCommandToCode("add", "$t0", "$t0", "$t1");
+                    AssemblyFileWriter.appendCommandToCode("lw", "$t0", "0($t0)");
+                    LocalVariableDescriptor lvd = new LocalVariableDescriptor(getVariableName(), changeArrayTypeToElementType(arrName.getType()));
+                    AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
+                    SemanticStack.push(lvd);
+                    AssemblyFileWriter.appendCommandToCode("sw", "$t0", lvd.getName());
+                    break;
+                case "popArrayAccess":
+                    SemanticStack.pop();
+                    SemanticStack.push(arrName);
+                    SemanticStack.push(index);
                     break;
                 case "arrayAssignment":
                     Descriptor rightSide = (Descriptor) SemanticStack.pop();
                     Descriptor des = (Descriptor) SemanticStack.pop();
+                    AssemblyFileWriter.appendComment("left array assignment");
                     if (TypeChecker.isArrayType(des.getType())) {
                         VariableDescriptor des2 = (VariableDescriptor) SemanticStack.pop();
                         Descriptor nameOfArrayDesc = (Descriptor) SemanticStack.pop();
-                        int index = Integer.parseInt(des2.getValue());
+                        int idx = Integer.parseInt(des2.getValue());
                         int rightIndex = Integer.parseInt(((VariableDescriptor) rightSide).getValue());
                         //right
                         AssemblyFileWriter.appendCommandToCode("li", "$t0", String.valueOf(rightIndex));
                         AssemblyFileWriter.appendCommandToCode("la", "$t1", des.getName());
+                        AssemblyFileWriter.appendCommandToCode("li", "$t4", String.valueOf(4)); //TODO: convert 4 to size of
+                        AssemblyFileWriter.appendCommandToCode("mul", "$t0", "$t0", "$t4");
                         AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t0");
                         AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
                         //left
-                        AssemblyFileWriter.appendCommandToCode("li", "$t2", String.valueOf(index));
+                        AssemblyFileWriter.appendCommandToCode("li", "$t2", String.valueOf(idx));
                         AssemblyFileWriter.appendCommandToCode("la", "$t3", nameOfArrayDesc.getName());
+                        AssemblyFileWriter.appendCommandToCode("mul", "$t2", "$t2", "$t4");
                         AssemblyFileWriter.appendCommandToCode("add", "$t3", "$t3", "$t2");
                         //assign
                         AssemblyFileWriter.appendCommandToCode("sw", "$t1", "0($t3)");
+                        AssemblyFileWriter.appendDebugLine("0($t3)");
+
                     } else {
                         VariableDescriptor arrIndex = (VariableDescriptor) des;
                         Descriptor nameOfArrDes = (Descriptor) SemanticStack.pop();
                         AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(arrIndex.getValue()));
                         AssemblyFileWriter.appendCommandToCode("la", "$t2", nameOfArrDes.getName());
+                        AssemblyFileWriter.appendCommandToCode("li", "$t4", String.valueOf(4)); //TODO: convert 4 to size of
+                        AssemblyFileWriter.appendCommandToCode("mul", "$t1", "$t1", "$t4");
                         AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t2");
                         AssemblyFileWriter.appendCommandToCode("la", "$t3", rightSide.getName());
                         AssemblyFileWriter.appendCommandToCode("lw", "$t3", "0($t3)");
                         AssemblyFileWriter.appendCommandToCode("sw", "$t3", "0($t1)");
+                        AssemblyFileWriter.appendDebugLine("0($t1)");
                     }
                     break;
                 case "trueCode":
@@ -351,11 +387,9 @@ public class CodeGenerator implements parser.CodeGenerator {
                     SemanticStack.push(resType);
                     break;
                 case "pushIdDcl":
-                    try {
-                        DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
-                    } catch (Exception e) {
-                        DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
-                    }
+                    DescriptorChecker.checkNotContainsDescriptor(lexical.currentSymbol.getToken());
+                    DescriptorChecker.checkNotContainsDescriptorGlobal(lexical.currentSymbol.getToken());
+
                     SemanticStack.push(lexical.currentSymbol.getToken());
                     break;
                 case "pushIdDclGlobal":
@@ -367,40 +401,72 @@ public class CodeGenerator implements parser.CodeGenerator {
                     break;
                 case "addDescriptor":
                     String name = (String) SemanticStack.pop();
-                    Type t = (Type) SemanticStack.pop();
-                    if (TypeChecker.isArrayType(t)) {
-                        LocalArrayDescriptor lad = new LocalArrayDescriptor(getVariableName(), t);
-                        lad.setRealName(name);
-                        SymbolTableStack.top().addDescriptor(name, lad);
-                    } else {
-                        if (!SymbolTableStack.top().contains(name)) {
-                            LocalVariableDescriptor lvd = new LocalVariableDescriptor(getVariableName(), t);
-                            SymbolTableStack.top().addDescriptor(name, lvd);
-                            if (t != Type.STRING) {
-                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
-                            } else {
-                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
+                    Object t1 = SemanticStack.pop();
+                    if (t1 instanceof String) { // record
+                        o = null;
+                        try {
+                            if (!SemanticStack.isEmpty()) {
+                                o = SemanticStack.pop();
+                                String isRecord = (String) o;
+                                if (isRecord.equals("record")) {
+                                    String recName = (String) t1;
+                                    if (!Records.contains(recName)) {
+                                        Records.noRecordWithThisName(recName);
+                                    } else {
+                                        RecordDescriptor recordDescriptor = new RecordDescriptor(getVariableName());
+                                        recordDescriptor.setTypeName(recName);
+                                        ArrayList<RecordElement> recordElements = new ArrayList<>();
+                                        ArrayList<RecordVariable> recordVariables = Records.getVars(recName);
+                                        for (int i = 0; i < recordVariables.size(); i++) {
+                                            RecordVariable r = recordVariables.get(i);
+                                            recordElements.add(new RecordElement(i, new LocalVariableDescriptor(r.getId(), r.getType())));
+                                        }
+                                        recordDescriptor.setRecordElements(recordElements);
+                                        GlobalSymbolTable.getSymbolTable().addDescriptor(name, recordDescriptor);
+                                        AssemblyFileWriter.appendCommandToData(recordDescriptor.getName(), "space", String.valueOf(4 * recordElements.size()));
+                                    }
+                                } else {
+                                    SemanticStack.push(o);
+                                }
                             }
+                        } catch (Exception e) {
+                            SemanticStack.push(o);
+                        }
+                    } else if (t1 instanceof Type) {
+                        Type t = (Type) t1;
+                        if (TypeChecker.isArrayType(t)) {
+                            ArrayDescriptor lad = (ArrayDescriptor) SymbolTableStack.top().getDescriptor(name);
+                            lad.setRealName(name);
                         } else {
-                            System.err.println("Variable " + name + " is defined before");
+                            if (!SymbolTableStack.top().contains(name)) {
+                                lvd = new LocalVariableDescriptor(getVariableName(), t);
+                                SymbolTableStack.top().addDescriptor(name, lvd);
+                                if (t != Type.STRING) {
+                                    AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
+                                } else {
+                                    AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
+                                }
+                            } else {
+                                System.err.println("Variable " + name + " is defined before");
+                            }
                         }
                     }
                     break;
                 case "addDescriptorGlobal":
                     name = (String) SemanticStack.pop();
-                    t = (Type) SemanticStack.pop();
+                    Type t = (Type) SemanticStack.pop();
                     if (TypeChecker.isArrayType(t)) {
                         GlobalArrayDescriptor lad = new GlobalArrayDescriptor(getVariableName(), t);
                         lad.setRealName(name);
                         GlobalSymbolTable.getSymbolTable().addDescriptor(name, lad);
                     } else {
                         if (!GlobalSymbolTable.getSymbolTable().contains(name)) {
-                            GlobalVariableDescriptor lvd = new GlobalVariableDescriptor(getVariableName(), t);
-                            GlobalSymbolTable.getSymbolTable().addDescriptor(name, lvd);
+                            GlobalVariableDescriptor gvd = new GlobalVariableDescriptor(getVariableName(), t);
+                            GlobalSymbolTable.getSymbolTable().addDescriptor(name, gvd);
                             if (t != Type.STRING) {
-                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "word", "0");
+                                AssemblyFileWriter.appendCommandToData(gvd.getName(), "word", "0");
                             } else {
-                                AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
+                                AssemblyFileWriter.appendCommandToData(gvd.getName(), "space", "20");
                             }
                         } else {
                             System.err.println("Variable " + name + " is defined before");
@@ -422,17 +488,53 @@ public class CodeGenerator implements parser.CodeGenerator {
                     System.out.println("code gen of assignment");
                     rightSide = (Descriptor) SemanticStack.pop();
                     des = (Descriptor) SemanticStack.pop();
+                    System.out.println(rightSide.getType());
+                    System.out.println(des.getType());
                     if (TypeChecker.isArrayType(des.getType())) {
                         int index = Integer.parseInt(((VariableDescriptor) rightSide).getValue());
                         AssemblyFileWriter.appendCommandToCode("li", "$t0", String.valueOf(index));
                         AssemblyFileWriter.appendCommandToCode("la", "$t1", des.getName());
+                        AssemblyFileWriter.appendCommandToCode("li", "$t4", String.valueOf(4)); //TODO: convert 4 to size of
+                        AssemblyFileWriter.appendCommandToCode("mul", "$t0", "$t0", "$t4");
                         AssemblyFileWriter.appendCommandToCode("add", "$t1", "$t1", "$t0");
                         AssemblyFileWriter.appendCommandToCode("lw", "$t1", "0($t1)");
                         Descriptor leftSide = (Descriptor) SemanticStack.pop();
                         AssemblyFileWriter.appendCommandToCode("sw", "$t1", leftSide.getName());
+                        AssemblyFileWriter.appendDebugLine(leftSide.getName());
                     } else {
                         Descriptor leftSide = (Descriptor) des;
                         new Assignment(leftSide, rightSide).compile();
+                    }
+                    break;
+                case "recordAddName":
+                    SemanticStack.push(lexical.currentSymbol.getToken());
+                    Records.put(lexical.currentSymbol.getToken(), new ArrayList<>());
+                    break;
+                case "pushRecordType":
+                    SemanticStack.push(lexical.currentSymbol.getToken());
+                    break;
+                case "pushIdRecordDcl":
+                    type = changeStringToType((String) SemanticStack.pop());
+                    name = (String) SemanticStack.pop();
+                    Records.addVar(name, new RecordVariable(name, type));
+                    break;
+                case "pushRecord":
+                    SemanticStack.push("record");
+                    break;
+                case "checkHasRecord":
+                    if (Records.contains(lexical.currentSymbol.getToken())) {
+                        SemanticStack.push(lexical.currentSymbol.getToken());
+                    } else {
+                        //TODO (do not have record with this name)
+                    }
+                    break;
+                case "recordVarAndPush":
+                    String recordName = (String) SemanticStack.pop();
+                    try {
+                        Descriptor descriptor = GlobalSymbolTable.getSymbolTable().getDescriptor(recordName);
+
+                    } catch (Exception e) {
+                        //TODO (record is not defined before)
                     }
                     break;
                 default:
@@ -441,7 +543,7 @@ public class CodeGenerator implements parser.CodeGenerator {
             System.out.println();
         } catch (Exception e) {
             System.err.println("Compile Error Occurred");
-            // e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -457,6 +559,24 @@ public class CodeGenerator implements parser.CodeGenerator {
                 res = Type.REAL_NUMBER;
                 break;
             case "string":
+                res = Type.STRING;
+                break;
+            default:
+                res = null;
+        }
+        return res;
+    }
+
+    Type changeArrayTypeToElementType(Type arrType) {
+        Type res;
+        switch (arrType) {
+            case DOUBLE_ARRAY:
+                res = Type.REAL_NUMBER;
+                break;
+            case INT_ARRAY:
+                res = Type.INTEGER_NUMBER;
+                break;
+            case STRING_ARRAY:
                 res = Type.STRING;
                 break;
             default:

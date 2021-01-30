@@ -1068,4 +1068,8 @@ public class CompilerScanner implements Lexical {
     public Symbol getSymbol() {
         return currentSymbol;
     }
+
+    public int getLine() {
+        return yyline;
+    }
 }
