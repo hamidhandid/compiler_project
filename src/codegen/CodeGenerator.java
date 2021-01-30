@@ -399,7 +399,15 @@ public class CodeGenerator implements parser.CodeGenerator {
                         try {
                             SemanticStack.push(GlobalSymbolTable.getSymbolTable().getDescriptor(lexical.currentSymbol.getToken()));
                         } catch (Exception e1) {
-                            new NameError(lexical.currentSymbol.getToken(), false);
+                            try {
+                                try {
+                                    throw new NameError(lexical.currentSymbol.getToken(), false);
+                                } catch (Exception e2) {
+                                    System.err.println(e2.getMessage());
+                                }
+                            } catch (Exception e2) {
+                                System.err.println(e2.getMessage());
+                            }
                         }
                     }
                     break;
@@ -451,7 +459,11 @@ public class CodeGenerator implements parser.CodeGenerator {
                                     AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
                                 }
                             } else {
-                                new NameError(name, true);
+                                try {
+                                    throw new NameError(name, true);
+                                } catch (Exception e2) {
+                                    System.err.println(e2.getMessage());
+                                }
                             }
                         }
                     }
@@ -473,7 +485,11 @@ public class CodeGenerator implements parser.CodeGenerator {
                                 AssemblyFileWriter.appendCommandToData(gvd.getName(), "space", "20");
                             }
                         } else {
-                            new NameError(name, true);
+                            try {
+                                throw new NameError(name, true);
+                            } catch (Exception e2) {
+                                System.err.println(e2.getMessage());
+                            }
                         }
                     }
                     break;
@@ -561,8 +577,8 @@ public class CodeGenerator implements parser.CodeGenerator {
                     str = lexical.currentSymbol.getToken();
                     str2 = (String) SemanticStack.pop();
                     try {
-                        RecordDescriptor descriptor = (RecordDescriptor) GlobalSymbolTable.getSymbolTable().getDescriptor(str);
-                        int index = descriptor.getIndex(str2);
+                        RecordDescriptor descriptor = (RecordDescriptor) GlobalSymbolTable.getSymbolTable().getDescriptor(str2);
+                        int index = descriptor.getIndex(str);
                         AssemblyFileWriter.appendCommandToCode("la", "$t0", descriptor.getName());
                         AssemblyFileWriter.appendCommandToCode("li", "$t1", String.valueOf(index));
                         AssemblyFileWriter.appendCommandToCode("li", "$t4", "4");
@@ -574,7 +590,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                         AssemblyFileWriter.appendCommandToCode("sw", "$t0", newAdr);
                         SemanticStack.push(new LocalVariableDescriptor(newAdr, Type.INTEGER_NUMBER));
                     } catch (Exception e) {
-                        Records.noRecordWithThisName(str);
+                        Records.noRecordWithThisName(str2);
                     }
                     break;
                 case "popRecord":

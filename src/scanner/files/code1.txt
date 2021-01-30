@@ -1,4 +1,7 @@
-int x;
+record r1 {
+    int a;
+    int b;
+};
 function int main() {
     // int a;
     // int b;
@@ -48,9 +51,18 @@ function int main() {
     //     a = a + 1;
     //     Print(a);
     // }
-    x = 4;
+    // x = 4;
     // a &= 14 ; // 01110
     // Print(a);
-    Print(x);
+    // int [] arr;
+    // int x;
+    // arr = New Array(20, int);
+    // arr[2] = 6;
+    // arr[3] = arr[2];
+    // x = arr[3];
+    record r1 name;
+    name.a = 2;
+    name.b = 3;
+    // Print(x + arr[3]);
     return 0;
 }

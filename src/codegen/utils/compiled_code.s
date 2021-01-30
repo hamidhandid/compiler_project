@@ -2,7 +2,12 @@
 .globl main
 main:
 		# integer constant 
-		li $t0, 4
+		li $t0, 2
+		sw $t0, adr1
+		# t7 is just for debugging 
+		lw $t7, adr1
+		# integer constant 
+		li $t0, 3
 		sw $t0, adr2
 		# t7 is just for debugging 
 		lw $t7, adr2
