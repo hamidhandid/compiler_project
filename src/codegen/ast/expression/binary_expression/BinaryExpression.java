@@ -146,9 +146,17 @@ public abstract class BinaryExpression extends Expression {
         Descriptor firstOperandDes = firstOperand;
         Descriptor secondOperandDes = secondOperand;
         TypeChecker.checkType(firstOperandDes.getType(), secondOperandDes.getType(), "add");
-        DescriptorChecker.checkContainsDescriptor(firstOperandDes);
-        DescriptorChecker.checkContainsDescriptor(secondOperandDes);
-        
+        if (firstOperandDes.getIsLocal()) {
+            DescriptorChecker.checkContainsDescriptor(firstOperandDes);
+        } else {
+            DescriptorChecker.checkContainsDescriptorGlobal(firstOperandDes);
+        }
+        if (secondOperandDes.getIsLocal()) {
+            DescriptorChecker.checkContainsDescriptor(secondOperandDes);
+        } else {
+            DescriptorChecker.checkContainsDescriptorGlobal(secondOperandDes);
+        }
+
         Type resultType = firstOperandDes.getType();
         String operationCommand;
         String storeCommand = "sw", loadCommand = "lw";

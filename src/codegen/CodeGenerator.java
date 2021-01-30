@@ -258,10 +258,18 @@ public class CodeGenerator implements parser.CodeGenerator {
                     Type newArrayType = (Type) SemanticStack.pop();
                     LocalVariableDescriptor sizeDescriptor = (LocalVariableDescriptor) SemanticStack.pop();
                     ArrayDescriptor nameOfArrayDes = (ArrayDescriptor) SemanticStack.pop();
-                    DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
+                    if (nameOfArrayDes.getIsLocal()) {
+                        DescriptorChecker.checkContainsDescriptor(nameOfArrayDes);
+                    } else {
+                        DescriptorChecker.checkContainsDescriptorGlobal(nameOfArrayDes);
+                    }
                     TypeChecker.checkArrayType(nameOfArrayDes.getType(), newArrayType);
                     ArrayDescriptor ad = new LocalArrayDescriptor(nameOfArrayDes.getName(), newArrayType);
-                    SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
+                    if (nameOfArrayDes.getIsLocal()) {
+                        SymbolTableStack.top().addDescriptor(nameOfArrayDes.getRealName(), ad);
+                    } else {
+                        GlobalSymbolTable.getSymbolTable().addDescriptor(nameOfArrayDes.getRealName(), ad);
+                    }
                     AssemblyFileWriter.appendCommandToData(nameOfArrayDes.getName(), ".space", String.valueOf(4 * Integer.parseInt(sizeDescriptor.getValue())));
                     break;
                 case "arrayAssignment":

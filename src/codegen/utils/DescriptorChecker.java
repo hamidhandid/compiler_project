@@ -26,6 +26,17 @@ public class DescriptorChecker {
         }
     }
 
+    public static void checkContainsDescriptorGlobal(Descriptor descriptor) {
+        System.out.println("name of des = " + descriptor.getName());
+        if (!GlobalSymbolTable.getSymbolTable().containsDescriptor(descriptor.getName())) {
+            try {
+                throw new Exception("Global Symbol table does not have descriptor with name " + descriptor.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void checkNotContainsDescriptorGlobal(String name) {
         if (GlobalSymbolTable.getSymbolTable().contains(name)) {
             try {
