@@ -1,3 +1,4 @@
+int x;
 function int main() {
     // int a;
     // int b;
@@ -41,14 +42,15 @@ function int main() {
     // g = 5 ~ 7; // 101 111
     // Print(g);
     // Print(0x110);
-    int a;
-    a = 26; //  11010
+    // int a;
+    // a = 26; //  11010
     // while (a < 6) {
     //     a = a + 1;
     //     Print(a);
     // }
-
-    a &= 14 ; // 01110
-    Print(a);
+    x = 4;
+    // a &= 14 ; // 01110
+    // Print(a);
+    Print(x);
     return 0;
 }

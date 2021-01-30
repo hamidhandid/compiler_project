@@ -13,9 +13,9 @@ import codegen.ast.expression.input.ReadReal;
 import codegen.ast.expression.unary_expression.arithmetic.MinusMinus;
 import codegen.ast.expression.unary_expression.arithmetic.PlusPlus;
 import codegen.ast.expression.unary_expression.logical.Not;
+import codegen.ast.statement_block.statements.Assignment;
 import codegen.ast.statement_block.statements.If;
 import codegen.ast.statement_block.statements.Print;
-import codegen.ast.statement_block.statements.Assignment;
 import codegen.ast.statement_block.statements.Return;
 import codegen.ast.statement_block.statements.loops.For;
 import codegen.ast.statement_block.statements.loops.While;
@@ -28,16 +28,15 @@ import codegen.symbol_table.dscp.record.RecordDescriptor;
 import codegen.symbol_table.dscp.record.RecordElement;
 import codegen.symbol_table.dscp.variables.GlobalVariableDescriptor;
 import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
-import codegen.symbol_table.dscp.variables.RecordVariableDescriptor;
 import codegen.symbol_table.dscp.variables.VariableDescriptor;
-import codegen.symbol_table.stacks.records.RecordVariable;
-import codegen.symbol_table.stacks.records.Records;
 import codegen.symbol_table.stacks.SemanticStack;
 import codegen.symbol_table.stacks.SymbolTableStack;
+import codegen.symbol_table.stacks.records.RecordVariable;
+import codegen.symbol_table.stacks.records.Records;
 import codegen.utils.AssemblyFileWriter;
 import codegen.utils.DescriptorChecker;
 import codegen.utils.errors.CastError;
-import codegen.utils.errors.TypeError;
+import codegen.utils.errors.NameError;
 import codegen.utils.type.TypeChecker;
 import scanner.classes.CompilerScanner;
 import scanner.classes.Type;
@@ -234,7 +233,7 @@ public class CodeGenerator implements parser.CodeGenerator {
 //                    AssemblyFileWriter.appendCommandToData(lad.getName(), "word", "0");
                         SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        System.err.println("Variable is defined before");
+                        new NameError(lexical.currentSymbol.getToken(), true);
                     }
                     break;
                 case "arrayDclGlobal":
@@ -246,7 +245,7 @@ public class CodeGenerator implements parser.CodeGenerator {
 //                    AssemblyFileWriter.appendCommandToData(lad.getName(), "word", "0");
                         SemanticStack.push(lexical.currentSymbol.getToken());
                     } else {
-                        System.err.println("Variable is defined before");
+                        new NameError(lexical.currentSymbol.getToken(), true);
                     }
                     break;
                 case "setArrayDescriptor":
@@ -394,7 +393,15 @@ public class CodeGenerator implements parser.CodeGenerator {
                     SemanticStack.push(lexical.currentSymbol.getToken());
                     break;
                 case "pushId":
-                    SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
+                    try {
+                        SemanticStack.push(SymbolTableStack.top().getDescriptor(lexical.currentSymbol.getToken()));
+                    } catch (Exception e) {
+                        try {
+                            SemanticStack.push(GlobalSymbolTable.getSymbolTable().getDescriptor(lexical.currentSymbol.getToken()));
+                        } catch (Exception e1) {
+                            new NameError(lexical.currentSymbol.getToken(), false);
+                        }
+                    }
                     break;
                 case "addDescriptor":
                     String name = (String) SemanticStack.pop();
@@ -444,7 +451,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                                     AssemblyFileWriter.appendCommandToData(lvd.getName(), "space", "20");
                                 }
                             } else {
-                                System.err.println("Variable " + name + " is defined before");
+                                new NameError(name, true);
                             }
                         }
                     }
@@ -466,7 +473,7 @@ public class CodeGenerator implements parser.CodeGenerator {
                                 AssemblyFileWriter.appendCommandToData(gvd.getName(), "space", "20");
                             }
                         } else {
-                            System.err.println("Variable " + name + " is defined before");
+                            new NameError(name, true);
                         }
                     }
                     break;
@@ -596,15 +603,16 @@ public class CodeGenerator implements parser.CodeGenerator {
                         }
                     } catch (Exception e) {
                         System.err.println("Compile Error Occurred");
+                        e.printStackTrace();
                     }
                     break;
                 default:
-                    System.out.println("Rest");
+                    System.out.println("");
             }
             System.out.println();
         } catch (Exception e) {
             System.err.println("Compile Error Occurred");
-            // e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -652,6 +660,7 @@ public class CodeGenerator implements parser.CodeGenerator {
             System.out.println("token = " + lexical.currentSymbol.getToken());
             SemanticStack.print();
             SymbolTableStack.top().print();
+            GlobalSymbolTable.print();
         } catch (Exception e) {
         }
     }

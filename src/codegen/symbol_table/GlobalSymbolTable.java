@@ -6,4 +6,9 @@ public class GlobalSymbolTable {
     public static SymbolTable getSymbolTable() {
         return symbolTable;
     }
+
+    public static void print() {
+        System.out.print("Global Symbol Table = ");
+        symbolTable.print();
+    }
 }

@@ -21,8 +21,6 @@ public class TypeChecker {
                 || (arrayType == Type.STRING_ARRAY && elementType == Type.STRING)) {
             return true;
         }
-        //TODO (handle this)
-        return false;
-//        throw new TypeError("TypeError: array type is " + elementType + " array but it is newed with " + arrayType);
+        throw new TypeError("TypeError: array type is " + elementType + " array but it is newed with " + arrayType);
     }
 }

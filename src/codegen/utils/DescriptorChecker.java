@@ -3,13 +3,14 @@ package codegen.utils;
 import codegen.symbol_table.GlobalSymbolTable;
 import codegen.symbol_table.dscp.Descriptor;
 import codegen.symbol_table.stacks.SymbolTableStack;
+import codegen.utils.errors.NameError;
 
 public class DescriptorChecker {
     public static void checkContainsDescriptor(Descriptor descriptor) {
         System.out.println("name of des = " + descriptor.getName());
         if (!SymbolTableStack.top().containsDescriptor(descriptor.getName())) {
             try {
-                throw new Exception("Symbol table does not have descriptor with name " + descriptor.getName());
+                throw new NameError( descriptor.getName(), false, "Symbol table ");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -19,7 +20,7 @@ public class DescriptorChecker {
     public static void checkNotContainsDescriptor(String name) throws Exception {
         if (!SymbolTableStack.isEmpty()) {
             if (SymbolTableStack.top().contains(name)) {
-                throw new Exception("Symbol table has descriptor with name " + name + " before");
+                throw new NameError(name, true, "Symbol table ");
             }
         }
     }
@@ -28,7 +29,7 @@ public class DescriptorChecker {
         System.out.println("name of des = " + descriptor.getName());
         if (!GlobalSymbolTable.getSymbolTable().containsDescriptor(descriptor.getName())) {
             try {
-                throw new Exception("Global Symbol table does not have descriptor with name " + descriptor.getName());
+                throw new NameError( descriptor.getName(), false, "Global Symbol table ");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -39,7 +40,7 @@ public class DescriptorChecker {
         if (!GlobalSymbolTable.getSymbolTable().isEmpty()) {
             if (GlobalSymbolTable.getSymbolTable().contains(name)) {
                 try {
-                    throw new Exception("Global Symbol table has descriptor with name " + name + " before");
+                    throw new NameError(name, true, "Global Symbol table ");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
