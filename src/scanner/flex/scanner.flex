@@ -88,6 +88,8 @@ AdditionAssignment = "+="
 SubtractionAssignment = "-="
 ProductionAssignment = "*="
 DivisionAssignment = "/="
+AndAssignment = "&="
+OrAssignment = "|="
 Increment = "++"
 Decrement = "--"
 Less = "<"
@@ -116,7 +118,7 @@ OpeningParenthesis = "("
 ClosingParenthesis = ")"
 OpeningCurlyBraces = "{"
 ClosingCurlyBraces = "}"
-OperatorAndPunctuation = {Percent} | {Add} | {Unaryminus} | {Production} | {Division} | {AdditionAssignment} | {SubtractionAssignment} | {ProductionAssignment} | {DivisionAssignment} | {Increment} | {Decrement} | {Less} | {LessEqual} | {Greater} | {GreaterEqual} | {NotEqual} | {Equal} | {Assignment} | {Mod} | {LogicalAnd} | {LogicalOr} | {LogicalNor} | {BitwiseAnd} | {BitwiseOr} | {StringLiteral} | {BitwiseXor} | {Not} | {Dot} | {Comma} | {Colon} | {Semicolon} | {OpeningBraces} | {ClosingBraces} | {OpeningParenthesis} | {ClosingParenthesis} | {OpeningCurlyBraces} | {ClosingCurlyBraces}
+OperatorAndPunctuation = {AndAssignment} | {OrAssignment} |  {Percent} | {Add} | {Unaryminus} | {Production} | {Division} | {AdditionAssignment} | {SubtractionAssignment} | {ProductionAssignment} | {DivisionAssignment} | {Increment} | {Decrement} | {Less} | {LessEqual} | {Greater} | {GreaterEqual} | {NotEqual} | {Equal} | {Assignment} | {Mod} | {LogicalAnd} | {LogicalOr} | {LogicalNor} | {BitwiseAnd} | {BitwiseOr} | {StringLiteral} | {BitwiseXor} | {Not} | {Dot} | {Comma} | {Colon} | {Semicolon} | {OpeningBraces} | {ClosingBraces} | {OpeningParenthesis} | {ClosingParenthesis} | {OpeningCurlyBraces} | {ClosingCurlyBraces}
 
 // Boolean
 Boolean = {True} | {False}
