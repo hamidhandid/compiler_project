@@ -80,7 +80,7 @@ public class CompilerScanner implements Lexical {
                     "\1\35\1\0\1\36\1\37\1\40\1\41\1\42\1\43" +
                     "\1\44\1\45\1\46\1\25\1\47\1\50\1\25\1\51" +
                     "\1\52\2\25\1\53\1\54\1\55\1\56\1\57\1\60" +
-                    "\1\33\1\61\1\25\1\7\1\62\1\7\u0382\0";
+                    "\1\33\1\61\1\25\1\7\1\62\2\7\u0381\0";
 
     private static int[] zzUnpackcmap_blocks() {
         int[] result = new int[1024];
@@ -1017,6 +1017,7 @@ public class CompilerScanner implements Lexical {
             }
         }
     }
+
 
     @Override
     public String nextToken() {
