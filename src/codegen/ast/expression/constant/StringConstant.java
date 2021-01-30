@@ -1,8 +1,10 @@
 package codegen.ast.expression.constant;
 
 import codegen.CodeGenerator;
+import codegen.symbol_table.GlobalSymbolTable;
 import codegen.symbol_table.SymbolTable;
 import codegen.symbol_table.dscp.Descriptor;
+import codegen.symbol_table.dscp.variables.GlobalVariableDescriptor;
 import codegen.symbol_table.dscp.variables.LocalVariableDescriptor;
 import codegen.symbol_table.dscp.variables.VariableDescriptor;
 import codegen.symbol_table.stacks.SemanticStack;
@@ -20,13 +22,17 @@ public class StringConstant extends ConstantExpression {
     @Override
     public void compile() {
         System.out.println(stringConst);
-        String variableName = CodeGenerator.getVariableName();
-        VariableDescriptor descriptor = new LocalVariableDescriptor(variableName, Type.STRING);
-        descriptor.setValue(stringConst);
-        SemanticStack.push(descriptor);
-        AssemblyFileWriter.appendComment("string constant");
-        SymbolTableStack.top().addDescriptor("$$" + stringConst, descriptor);
-        AssemblyFileWriter.appendCommandToData(variableName, "asciiz", "\"" + stringConst + "\"");
-        AssemblyFileWriter.appendDebugLine(variableName);
+        VariableDescriptor descriptor = (VariableDescriptor) GlobalSymbolTable.getSymbolTable().getDescriptor("$$" + stringConst);
+        boolean hasDescriptor = descriptor != null;
+        if (!hasDescriptor) {
+            String variableName = CodeGenerator.getVariableName();
+            descriptor = new GlobalVariableDescriptor(variableName, Type.STRING);
+            descriptor.setValue(stringConst);
+            SemanticStack.push(descriptor);
+            AssemblyFileWriter.appendComment("string constant");
+            GlobalSymbolTable.getSymbolTable().addDescriptor("$$" + stringConst, descriptor);
+            AssemblyFileWriter.appendCommandToData(variableName, "asciiz", "\"" + stringConst + "\"");
+            AssemblyFileWriter.appendDebugLine(variableName);
+        }
     }
 }
