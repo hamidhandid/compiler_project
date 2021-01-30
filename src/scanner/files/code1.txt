@@ -45,11 +45,11 @@ function int main() {
     // g = 5 ~ 7; // 101 111
     // Print(g);
     // Print(0x110);
-    record r1 r1name;
-    r1name.a = 4;
-    r1name.b = 7;
-
-    Print(r1name.a);
-
+    int a;
+    a = 3;
+    while (a < 6) {
+        a = a + 1;
+        Print(a);
+    }
     return 0;
 }

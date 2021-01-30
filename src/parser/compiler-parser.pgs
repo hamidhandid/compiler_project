@@ -243,8 +243,8 @@
         "isFinal": false
       },
       {
-        "x": 1098.0,
-        "y": 244.0,
+        "x": 1215.0,
+        "y": 241.0,
         "id": 18,
         "isFinal": true
       }
@@ -285,8 +285,8 @@
         "end": 16,
         "token": "VARIABLES",
         "func": "",
-        "anchorX": 673.0,
-        "anchorY": 256.0,
+        "anchorX": 685.0,
+        "anchorY": 251.0,
         "isGraph": true,
         "isGlobal": false
       },
@@ -313,7 +313,7 @@
       {
         "start": 17,
         "end": 18,
-        "token": "STMT_BLOCK",
+        "token": "STMT_BLOCK_FUNC",
         "func": "",
         "anchorX": 934.5,
         "anchorY": 245.0,
@@ -3178,9 +3178,9 @@
         "start": 167,
         "end": 168,
         "token": ")",
-        "func": "",
-        "anchorX": 724.0,
-        "anchorY": 370.0,
+        "func": "jumpAndLink",
+        "anchorX": 667.0,
+        "anchorY": 372.0,
         "isGraph": false,
         "isGlobal": false
       },
@@ -3198,7 +3198,7 @@
         "start": 169,
         "end": 168,
         "token": ")",
-        "func": "",
+        "func": "jumpAndLink",
         "anchorX": 723.0,
         "anchorY": 299.0,
         "isGraph": false,
@@ -3914,5 +3914,123 @@
       }
     ],
     "start": 201
+  },
+  {
+    "name": "STMT_BLOCK_FUNC",
+    "nodes": [
+      {
+        "x": 48.0,
+        "y": 441.0,
+        "id": 205,
+        "isFinal": false
+      },
+      {
+        "x": 680.0,
+        "y": 463.0,
+        "id": 206,
+        "isFinal": true
+      },
+      {
+        "x": 159.0,
+        "y": 448.0,
+        "id": 207,
+        "isFinal": false
+      },
+      {
+        "x": 426.0,
+        "y": 456.0,
+        "id": 208,
+        "isFinal": false
+      },
+      {
+        "x": 421.0,
+        "y": 594.0,
+        "id": 209,
+        "isFinal": false
+      }
+    ],
+    "edges": [
+      {
+        "start": 205,
+        "end": 207,
+        "token": "{",
+        "func": "startFunction",
+        "anchorX": 92.0,
+        "anchorY": 525.0,
+        "isGraph": false,
+        "isGlobal": false
+      },
+      {
+        "start": 207,
+        "end": 206,
+        "token": "}",
+        "func": "jumpReturn",
+        "anchorX": 406.0,
+        "anchorY": 351.0,
+        "isGraph": false,
+        "isGlobal": false
+      },
+      {
+        "start": 207,
+        "end": 208,
+        "token": "VARIABLE_DCLS",
+        "func": "",
+        "anchorX": 212.0,
+        "anchorY": 446.5,
+        "isGraph": true,
+        "isGlobal": false
+      },
+      {
+        "start": 207,
+        "end": 209,
+        "token": "STATEMENT",
+        "func": "",
+        "anchorX": 286.5,
+        "anchorY": 517.5,
+        "isGraph": true,
+        "isGlobal": false
+      },
+      {
+        "start": 208,
+        "end": 206,
+        "token": "}",
+        "func": "jumpReturn",
+        "anchorX": 506.0,
+        "anchorY": 459.5,
+        "isGraph": false,
+        "isGlobal": false
+      },
+      {
+        "start": 208,
+        "end": 209,
+        "token": "STATEMENT",
+        "func": "",
+        "anchorX": 423.5,
+        "anchorY": 525.0,
+        "isGraph": true,
+        "isGlobal": false
+      },
+      {
+        "start": 209,
+        "end": 209,
+        "token": "STATEMENT",
+        "func": "",
+        "anchorX": 421.99999999999994,
+        "anchorY": 661.0,
+        "isGraph": true,
+        "isGlobal": false
+      },
+      {
+        "start": 209,
+        "end": 206,
+        "token": "}",
+        "func": "jumpReturn",
+        "anchorX": 550.5,
+        "anchorY": 528.5,
+        "isGraph": false,
+        "isGlobal": false
+      }
+    ],
+    "start": 124
   }
 ]
